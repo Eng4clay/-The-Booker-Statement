@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فرضية البيان البوكري – نظام 𝕊 الثالوث الرياضي</title>
+
+<!-- External Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']], tags: 'ams' },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] },
+  startup: { ready() { MathJax.startup.defaultReady(); } }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+
+<style>
+/* ── ROOT VARS ── */
+:root {
+  --clr-bg:        #0a0a12;
+  --clr-surface:   #111122;
+  --clr-border:    #2a2a4a;
+  --clr-gold:      #FFD700;
+  --clr-purple:    #9C27B0;
+  --clr-teal:      #4ECDC4;
+  --clr-red:       #FF6B6B;
+  --clr-text:      #e8e8f5;
+  --clr-muted:     #8888aa;
+  --clr-white:     #ffffff;
+  --font-display:  'Amiri', serif;
+  --font-body:     'Tajawal', sans-serif;
+  --font-mono:     'Courier New', monospace;
+  --radius:        12px;
+  --shadow:        0 4px 24px rgba(156,39,176,.25);
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--clr-bg);
+  color: var(--clr-text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.8;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+#site-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 2rem;
+  background: rgba(10,10,18,.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--clr-border);
+}
+#site-header .logo {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--clr-gold);
+  letter-spacing: .04em;
+}
+#site-header nav { display: flex; gap: 1rem; flex-wrap: wrap; }
+#site-header nav a {
+  color: var(--clr-muted);
+  text-decoration: none;
+  font-size: .85rem;
+  transition: color .2s;
+}
+#site-header nav a:hover { color: var(--clr-teal); }
+
+/* ── LAYOUT ── */
+#main-layout {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  min-height: 100vh;
+  padding-top: 56px;
+}
+
+/* ── HERO ── */
+#hero {
+  text-align: center;
+  padding: 4rem 2rem 2rem;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(156,39,176,.18) 0%, transparent 70%);
+}
+#hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  color: var(--clr-white);
+  line-height: 1.3;
+  margin-bottom: .5rem;
+}
+#hero .subtitle {
+  color: var(--clr-purple);
+  font-size: 1.05rem;
+  margin-bottom: 1.5rem;
+}
+.author-card {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .3rem;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  padding: 1rem 2rem;
+  margin-top: 1rem;
+}
+.author-card strong { color: var(--clr-gold); }
+.author-card span { color: var(--clr-muted); font-size: .85rem; }
+
+/* ── SIM SECTION ── */
+#sim-section {
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  #sim-section { grid-template-columns: 1fr; }
+}
+
+#canvas-wrap {
+  position: relative;
+  background: #070711;
+  border-radius: var(--radius);
+  border: 1px solid var(--clr-border);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  aspect-ratio: 4/3;
+}
+#canvas-wrap canvas { display: block; width: 100% !important; height: 100% !important; }
+
+/* HUD */
+#hud {
+  position: absolute;
+  top: 12px; left: 12px;
+  background: rgba(7,7,17,.82);
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  padding: .6rem 1rem;
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  line-height: 1.6;
+  pointer-events: none;
+  min-width: 160px;
+}
+#hud .hud-title { color: var(--clr-gold); font-weight: bold; font-size: .8rem; margin-bottom: .2rem; }
+#hud .eta-val { color: var(--clr-teal); }
+#hud .bs-val  { color: var(--clr-purple); }
+#hud .tau-val { color: var(--clr-red); }
+#hud .state-val { color: var(--clr-gold); font-weight: bold; }
+
+/* Math overlay */
+#math-overlay {
+  position: absolute;
+  bottom: 12px; left: 12px;
+  font-size: 1rem;
+  pointer-events: none;
+}
+#math-overlay .eq-main {
+  background: rgba(7,7,17,.85);
+  border: 1px solid rgba(156,39,176,.4);
+  border-radius: 8px;
+  padding: .4rem .8rem;
+  color: var(--clr-white);
+  font-family: var(--font-mono);
+  font-size: .8rem;
+  letter-spacing: .05em;
+}
+#math-overlay .eq-main span.sym-abs  { color: var(--clr-gold); font-weight: bold; }
+#math-overlay .eq-main span.sym-zero { color: #aaa; }
+#math-overlay .eq-main span.sym-inf  { color: var(--clr-teal); }
+#math-overlay .eq-eta { margin-top: .3rem; }
+
+/* Controls Panel */
+#ctrl-panel {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+#ctrl-panel h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--clr-gold);
+  border-bottom: 1px solid var(--clr-border);
+  padding-bottom: .5rem;
+}
+
+.ctrl-group label {
+  display: flex;
+  justify-content: space-between;
+  font-size: .8rem;
+  color: var(--clr-muted);
+  margin-bottom: .3rem;
+}
+.ctrl-group label span { color: var(--clr-white); font-weight: 500; }
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+input[type=range].eta-slider  { background: linear-gradient(90deg, var(--clr-teal) var(--pct,50%), #333 var(--pct,50%)); }
+input[type=range].bs-slider   { background: linear-gradient(90deg, var(--clr-purple) var(--pct,50%), #333 var(--pct,50%)); }
+input[type=range].tau-slider  { background: linear-gradient(90deg, var(--clr-red) var(--pct,30%), #333 var(--pct,30%)); }
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--clr-white);
+  border: 2px solid var(--clr-border);
+  box-shadow: 0 0 6px rgba(255,255,255,.3);
+}
+
+.ctrl-btns { display: flex; gap: .5rem; flex-wrap: wrap; }
+.btn {
+  flex: 1;
+  padding: .5rem .75rem;
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  background: rgba(255,255,255,.05);
+  color: var(--clr-text);
+  font-family: var(--font-body);
+  font-size: .8rem;
+  cursor: pointer;
+  transition: all .2s;
+  text-align: center;
+}
+.btn:hover { background: rgba(255,255,255,.1); border-color: var(--clr-teal); color: var(--clr-teal); }
+.btn.active { background: rgba(78,205,196,.15); border-color: var(--clr-teal); color: var(--clr-teal); }
+.btn-reset:hover { border-color: var(--clr-gold); color: var(--clr-gold); }
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .78rem;
+  color: var(--clr-muted);
+}
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.info-formula {
+  background: rgba(156,39,176,.08);
+  border: 1px solid rgba(156,39,176,.3);
+  border-radius: 8px;
+  padding: .6rem;
+  font-size: .75rem;
+  color: var(--clr-muted);
+  line-height: 1.6;
+}
+.info-formula .formula { color: var(--clr-white); font-family: var(--font-mono); }
+
+/* ── CONTENT SECTION ── */
+#content-section {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Tabs */
+.tabs-wrap {
+  position: sticky;
+  top: 56px;
+  z-index: 10;
+  background: var(--clr-bg);
+  padding: .75rem 0;
+}
+.tabs {
+  display: flex;
+  gap: .5rem;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--clr-border);
+  padding-bottom: .5rem;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab-btn {
+  white-space: nowrap;
+  padding: .4rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 8px 8px 0 0;
+  background: none;
+  color: var(--clr-muted);
+  font-family: var(--font-body);
+  font-size: .85rem;
+  cursor: pointer;
+  transition: all .2s;
+}
+.tab-btn:hover { color: var(--clr-text); }
+.tab-btn.active {
+  color: var(--clr-teal);
+  border-color: var(--clr-border);
+  border-bottom-color: var(--clr-bg);
+  background: var(--clr-surface);
+}
+
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* Hypothesis text container */
+.hyp-scroll {
+  height: 600px;
+  overflow-y: auto;
+  padding: 1.5rem;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: 0 var(--radius) var(--radius) var(--radius);
+  scroll-behavior: smooth;
+}
+.hyp-scroll::-webkit-scrollbar { width: 6px; }
+.hyp-scroll::-webkit-scrollbar-thumb { background: var(--clr-border); border-radius: 3px; }
+
+/* Typography inside hypothesis */
+.hyp-scroll h1, .hyp-scroll h2, .hyp-scroll h3 {
+  font-family: var(--font-display);
+  color: var(--clr-white);
+  margin: 1.5rem 0 .75rem;
+  line-height: 1.4;
+}
+.hyp-scroll h1 { font-size: 1.8rem; color: var(--clr-gold); border-bottom: 2px solid var(--clr-purple); padding-bottom: .5rem; }
+.hyp-scroll h2 { font-size: 1.35rem; color: var(--clr-teal); }
+.hyp-scroll h3 { font-size: 1.1rem; color: var(--clr-purple); }
+.hyp-scroll p  { margin-bottom: 1rem; color: #d0d0e8; }
+.hyp-scroll strong { color: var(--clr-white); }
+.hyp-scroll em { color: var(--clr-teal); font-style: italic; }
+
+/* Tables */
+.hyp-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  font-size: .82rem;
+  overflow-x: auto;
+  display: block;
+}
+.hyp-scroll th {
+  background: rgba(156,39,176,.25);
+  color: var(--clr-white);
+  padding: .6rem .8rem;
+  text-align: right;
+  border: 1px solid var(--clr-border);
+  white-space: nowrap;
+}
+.hyp-scroll td {
+  padding: .5rem .8rem;
+  border: 1px solid var(--clr-border);
+  color: #ccc;
+  vertical-align: top;
+}
+.hyp-scroll tr:nth-child(even) td { background: rgba(255,255,255,.03); }
+.hyp-scroll tr:hover td { background: rgba(78,205,196,.06); }
+
+/* Math blocks */
+.hyp-scroll .math-block {
+  background: rgba(10,10,30,.6);
+  border: 1px solid rgba(156,39,176,.3);
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+  text-align: center;
+}
+.hyp-scroll .math-inline { color: var(--clr-teal); }
+
+/* Mermaid diagrams */
+.mermaid-wrap {
+  background: rgba(10,10,30,.7);
+  border: 1px solid rgba(78,205,196,.2);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin: 1.25rem 0;
+  overflow-x: auto;
+  text-align: center;
+}
+.mermaid { display: block; }
+
+/* Project cards */
+.project-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--clr-border);
+  border-left: 3px solid var(--clr-purple);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+}
+.project-card h4 { color: var(--clr-purple); margin-bottom: .5rem; font-size: .95rem; }
+.project-card ul { padding-right: 1.2rem; color: #bbb; font-size: .85rem; }
+.project-card ul li { margin-bottom: .25rem; }
+
+/* Prediction table */
+.pred-table-wrap { overflow-x: auto; }
+
+/* Callout boxes */
+.callout {
+  padding: .9rem 1.2rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  font-size: .88rem;
+}
+.callout-check { background: rgba(78,205,196,.08); border-right: 3px solid var(--clr-teal); }
+.callout-gold  { background: rgba(255,215,0,.07); border-right: 3px solid var(--clr-gold); }
+.callout-red   { background: rgba(255,107,107,.07); border-right: 3px solid var(--clr-red); }
+.callout-title { font-weight: bold; margin-bottom: .3rem; }
+
+/* BS value badges */
+.bs-badge {
+  display: inline-block;
+  background: rgba(156,39,176,.2);
+  border: 1px solid var(--clr-purple);
+  border-radius: 4px;
+  padding: .1rem .4rem;
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  color: var(--clr-purple);
+}
+
+/* ── FOOTER ── */
+#site-footer {
+  background: var(--clr-surface);
+  border-top: 1px solid var(--clr-border);
+  text-align: center;
+  padding: 2rem;
+  color: var(--clr-muted);
+  font-size: .85rem;
+  line-height: 1.8;
+}
+#site-footer a { color: var(--clr-teal); text-decoration: none; }
+#site-footer strong { color: var(--clr-gold); }
+
+/* ── Scrollbar global ── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--clr-bg); }
+::-webkit-scrollbar-thumb { background: #2a2a4a; border-radius: 4px; }
+
+/* Glow utility */
+.glow-gold   { text-shadow: 0 0 12px rgba(255,215,0,.5); }
+.glow-purple { text-shadow: 0 0 12px rgba(156,39,176,.6); }
+.glow-teal   { text-shadow: 0 0 12px rgba(78,205,196,.5); }
+
+/* Responsive */
+@media (max-width: 600px) {
+  #site-header nav { display: none; }
+  #sim-section { padding: 1rem; }
+  #content-section { padding: 1rem; }
+  .hyp-scroll { height: 450px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header id="site-header">
+  <div class="logo">𝕊 | البيان البوكري</div>
+  <nav>
+    <a href="#sim-section">⚡ المحاكاة</a>
+    <a href="#tab-intro">المقدمة</a>
+    <a href="#tab-defs">التعريفات</a>
+    <a href="#tab-eqs">المعادلات</a>
+    <a href="#tab-pred">التنبؤات</a>
+    <a href="#tab-proj">المشاريع</a>
+  </nav>
+</header>
+
+<!-- ══ MAIN LAYOUT ══ -->
+<div id="main-layout">
+
+  <!-- HERO -->
+  <section id="hero">
+    <h1 class="glow-gold">فرضية البيان البوكري</h1>
+    <p class="subtitle">نظام 𝕊 الثالوث الرياضي — تأصيل فلسفي-طبيعي للوجود والتغير واللانهاية</p>
+    <div class="author-card">
+      <strong>✍️ م. أحمد علي بوكر نسيب</strong>
+      <span>📅 النسخة المطورة والنهائية — 2026</span>
+      <span>📧 Eng.ahmad.2011bokar@gmail.com</span>
+    </div>
+  </section>
+
+  <!-- SIM SECTION -->
+  <section id="sim-section">
+    <!-- THREE.JS CANVAS -->
+    <div id="canvas-wrap">
+      <canvas id="sim-canvas"></canvas>
+
+      <!-- HUD -->
+      <div id="hud">
+        <div class="hud-title">🔭 لوحة القياس اللحظية</div>
+        <div>η (التجلي): <span class="eta-val" id="h-eta">0.50</span></div>
+        <div>BS (الاستقرار): <span class="bs-val" id="h-bs">0.50</span></div>
+        <div>τ (الزمن): <span class="tau-val" id="h-tau">3.00</span></div>
+        <div>الحالة: <span class="state-val" id="h-state">تجلٍّ</span></div>
+      </div>
+
+      <!-- Math overlay -->
+      <div id="math-overlay">
+        <div class="eq-main">
+          <span class="sym-abs">❶</span>
+          &nbsp;⊕&nbsp;
+          <span class="sym-zero">0ₚ</span>
+          &nbsp;=&nbsp;
+          <span class="sym-inf">① = ∞</span>
+        </div>
+        <div class="eq-eta" id="eq-eta-display" style="margin-top:.3rem;">
+          <div class="eq-main" style="font-size:.72rem;opacity:.8;">
+            η(<span class="sym-zero">0ₚ</span>) = <span class="sym-inf">①</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTROL PANEL -->
+    <div id="ctrl-panel">
+      <h3>🎛️ لوحة التحكم التفاعلية</h3>
+
+      <div class="ctrl-group">
+        <label>معامل التجلي (η) <span id="lbl-eta">0.50</span></label>
+        <input type="range" id="sl-eta" class="eta-slider" min="0" max="1" step="0.01" value="0.5">
+      </div>
+
+      <div class="ctrl-group">
+        <label>الاستقرار البنيوي (BS) <span id="lbl-bs">0.50</span></label>
+        <input type="range" id="sl-bs" class="bs-slider" min="0" max="1" step="0.01" value="0.5">
+      </div>
+
+      <div class="ctrl-group">
+        <label>زمن التجلي (τ) <span id="lbl-tau">3.00</span></label>
+        <input type="range" id="sl-tau" class="tau-slider" min="0" max="10" step="0.1" value="3.0">
+      </div>
+
+      <div class="ctrl-btns">
+        <button class="btn btn-reset" id="btn-reset">↺ إعادة ضبط</button>
+        <button class="btn" id="btn-cycle">▶ دورة تلقائية</button>
+        <button class="btn" id="btn-explode">💥 تجلٍّ مفاجئ</button>
+      </div>
+
+      <div>
+        <div class="legend-item"><div class="legend-dot" style="background:#FFD700;box-shadow:0 0 6px #FFD700;"></div><span>❶ الواحد المطلق (BS=1.0)</span></div>
+        <div class="legend-item" style="margin-top:.35rem;"><div class="legend-dot" style="background:#888;"></div><span>0ₚ سحابة الإمكان (BS=0.333)</span></div>
+        <div class="legend-item" style="margin-top:.35rem;"><div class="legend-dot" style="background:#4ECDC4;"></div><span>∞ شبكة العلاقات (BS=0.667)</span></div>
+        <div class="legend-item" style="margin-top:.35rem;"><div class="legend-dot" style="background:#FF6B6B;"></div><span>① الواحد الطبيعي (تجلٍّ)</span></div>
+      </div>
+
+      <div class="info-formula">
+        <div class="formula">BS(n) = 2/(2n−3)&nbsp;&nbsp;n≥5</div>
+        <div style="margin-top:.3rem;">الاستقرار البنيوي يتناقص مع التعقيد.</div>
+        <div style="margin-top:.2rem;">𝒞ℬ = 6.184×10⁻⁴² (ثابت التجلي البوكري)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTENT SECTION -->
+  <section id="content-section">
+    <div class="tabs-wrap">
+      <div class="tabs" role="tablist">
+        <button class="tab-btn active" data-tab="intro" role="tab">📖 المقدمة</button>
+        <button class="tab-btn" data-tab="defs" role="tab">🔍 التعريفات</button>
+        <button class="tab-btn" data-tab="eqs" role="tab">📐 المعادلات</button>
+        <button class="tab-btn" data-tab="pred" role="tab">🔬 التنبؤات</button>
+        <button class="tab-btn" data-tab="proj" role="tab">💡 المشاريع</button>
+        <button class="tab-btn" data-tab="invest" role="tab">💰 الاستثمار</button>
+        <button class="tab-btn" data-tab="meta" role="tab">🌌 الميتافيزيقا</button>
+        <button class="tab-btn" data-tab="hist" role="tab">📜 التاريخ</button>
+        <button class="tab-btn" data-tab="exercises" role="tab">✏️ تمارين</button>
+      </div>
+    </div>
+
+    <!-- ── TAB: INTRO ── -->
+    <div class="tab-pane active" id="tab-intro">
+      <div class="hyp-scroll">
+        <h1>📘 فرضية البيان البوكري – نظام 𝕊 الثالوث الرياضي</h1>
+        <p style="color:var(--clr-purple);font-size:1.05rem;">تأصيل فلسفي-طبيعي للوجود والتغير واللانهاية — النسخة المطورة والنهائية 2026</p>
+
+        <h2>🚀 التطوير والتحسين الشامل</h2>
+        <p>تم تطوير وتحسين فرضية البيان البوكري في هذه النسخة وفق المحاور التالية:</p>
+        <ol style="padding-right:1.2rem;color:#ccc;line-height:2.1;">
+          <li>تصحيح وتدقيق جميع المعادلات والثوابت وإعادة مراجعة الاشتقاقات الحسابية بدقة متناهية.</li>
+          <li>إضافة <strong>5 مشاريع ابتكارية</strong> طموحة قابلة للتنفيذ مع تحديد الموارد المالية والتقنية.</li>
+          <li>تطوير <strong>8 تنبؤات محددة وقابلة للدحض</strong> مع بروتوكولات تجريبية تفصيلية.</li>
+          <li>إضافة خطة استثمارية ونموذج عائدات متعدد المراحل.</li>
+          <li>تعزيز الجبر الثالوثي بتمثيل مصفوفي قابل للبرمجة.</li>
+        </ol>
+
+        <h2>1. المقدمة</h2>
+
+        <div class="mermaid-wrap">
+          <div class="mermaid">
+graph LR
+    A["🧠 الفلسفة الطبيعية"] -->|أسئلة تقليدية| B["الوجود · التغير · اللانهاية"]
+    B --> C["⚖️ أزمة الأسس الرياضية"]
+    C --> D["🔷 نظام 𝕊 كإجابة موحدة"]
+    D --> E["❶ المطلق · 0ₚ الإمكان · ∞ العلاقة"]
+          </div>
+        </div>
+
+        <p>منذ أرسطو، قُسمت الفلسفة الطبيعية إلى بحث في المبادئ والأسباب، وفي الحركة واللانهاية، وفي المكان والزمان. هذه الأسئلة ظلت حاضرة في صميم التفكير العلمي حتى اليوم، لكنها واجهت أزمة أسس في الرياضيات خلال القرن العشرين: مفارقة راسل، مبرهنات غودل، استقلالية كوهين.</p>
+        <p>هذا البحث يعيد قراءة تلك المفاهيم الكلاسيكية في ضوء نظام 𝕊، الذي يقدم صياغة رياضية-فلسفية جديدة للوجود والتغير والاستقرار، ويهدف إلى تجاوز الأزمات عبر إطار تأسيسي ثلاثي يعيد وصل الميتافيزيقا بالفيزياء، والرياضيات بالوجود.</p>
+
+        <h3>1.1 إشكالية الوجود بين الفلسفة والفيزياء</h3>
+        <p>لطالما شكل سؤال "ما الوجود؟" لبّ التفكير الفلسفي منذ ما قبل سقراط. قدم بارمنيدس رؤية للوجود بوصفه واحداً ثابتاً لا يتغير، بينما رأى هيراقليطس أن التغير هو جوهر الوجود. مع ظهور الفيزياء الحديثة، تجددت هذه الأسئلة: نظرية النسبية أظهرت أن المكان والزمان ليسا مطلقين، وميكانيكا الكم كشفت عن عالم من التراكب والاحتمال.</p>
+        <p><strong>نظام 𝕊</strong> يقدم إطاراً يجيب عن هذه الأسئلة انطلاقاً من ثالوث أساسي: المطلق (❶)، الإمكان (0ₚ)، العلاقة (∞).</p>
+
+        <h3>1.2 أزمة الأسس الرياضية</h3>
+        <p>في مطلع القرن العشرين، سعى ديفيد هيلبرت إلى إضفاء الطابع الرسمي الكامل على الرياضيات. لكن هذا المشروع تلقى ضربات قاضية:</p>
+        <ul style="padding-right:1.2rem;color:#ccc;line-height:2;">
+          <li>مفارقة راسل (1901)</li>
+          <li>مبرهنات غودل (1931)</li>
+          <li>استقلالية كوهين (1963)</li>
+        </ul>
+        <p>هذه النتائج كشفت أن الأسس الصورية وحدها لا تكفي. هناك حاجة إلى أسس وجودية تربط الرياضيات بالواقع. هذا ما يقدمه نظام 𝕊.</p>
+
+        <h3>1.3 ضرورة العودة إلى الميتافيزيقا</h3>
+        <p>إذا كانت الرياضيات عاجزة عن تأسيس نفسها بنفسها، وإذا كانت الفيزياء تعيد باستمرار صياغة أسئلتها الوجودية، فليس أمامنا إلا العودة إلى الميتافيزيقا — ليس بمعناها التقليدي المنفصل عن العلم، بل بوصفها تأملاً في بنية الوجود يسترشد بالرياضيات والفيزياء معاً.</p>
+        <p>نظام 𝕊 يقدم <em>ميتافيزيقا رياضية</em> تقوم على: مبدأ الواحد، مبدأ الإمكان، مبدأ العلاقة.</p>
+
+        <div class="mermaid-wrap">
+          <div class="mermaid">
+graph TD
+    subgraph "الوضع الراهن"
+        A1["الفيزياء: جمود نظري"]
+        A2["الرياضيات: أزمة أسس"]
+        A3["الفلسفة: تشتت"]
+    end
+    A1 --> B["نظام 𝕊 المطور 2026"]
+    A2 --> B
+    A3 --> B
+    B --> C1["فيزياء جديدة + 8 تنبؤات"]
+    B --> C2["رياضيات جديدة + جبر محدد"]
+    B --> C3["فلسفة جديدة + منهجية قياس"]
+          </div>
+        </div>
+
+        <h2>7.1 أهمية البحث: قطيعة معرفية</h2>
+        <p>نظام 𝕊 يقدم قطيعة معرفية في وقت تعاني فيه الفيزياء من جمود نظري، والرياضيات من أزمة أسس، والفلسفة من تشتت. هذا البحث يعيد ربط هذه المجالات ويقدم برنامجاً بحثياً طموحاً يمتد من الجسيمات الأولية إلى الوعي الإنساني.</p>
+
+        <h2>📑 نبذة عن الباحث</h2>
+        <p>أحمد علي بوكر نسيب، باحث في فلسفة الرياضيات والفيزياء النظرية، ومطور أنظمة الذكاء الاصطناعي. حاصل على درجة الماجستير في الهندسة الميكانيكية العامة من جامعة جازان (2018). يهدف النظام إلى تجاوز ثنائيات الفلسفة الغربية وإعادة وصل الرياضيات بالوجود عبر مفاهيم التجلي والاستقرار البنيوي.</p>
+      </div>
+    </div>
+
+    <!-- ── TAB: DEFS ── -->
+    <div class="tab-pane" id="tab-defs">
+      <div class="hyp-scroll">
+        <h1>🔍 التعريفات الأساسية</h1>
+
+        <table>
+          <thead>
+            <tr><th>الرمز</th><th>المفهوم</th><th>التعريف الفلسفي</th><th>التعريف الرياضي</th><th>قابلية القياس</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong style="color:var(--clr-gold);">❶</strong></td>
+              <td>الواحد المطلق</td>
+              <td>الوجود غير المشروط، المحرك الأول</td>
+              <td class="math-block">$$❶ \notin \mathbb{R},\ ❶ \notin \mathbb{N}$$</td>
+              <td>غير قابل للقياس مباشرة، يُستدل عليه من التجليات</td>
+            </tr>
+            <tr>
+              <td><strong style="color:#aaa;">0ₚ</strong></td>
+              <td>الإمكان المحض</td>
+              <td>العدم النشط القابل للتشكل</td>
+              <td class="math-block">$$0_p = \lim_{\epsilon \to 0^+} \epsilon \cdot \textcircled{1}$$</td>
+              <td>يقاس عبر الإنتروبيا المعلوماتية</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--clr-teal);">∞</strong></td>
+              <td>اللانهاية العلائقية</td>
+              <td>فضاء العلاقات الذي يتجلى فيه الوجود</td>
+              <td class="math-block">$$\infty = \bigoplus_{i=1}^{\infty} R_i$$</td>
+              <td>يقاس عبر معاملات التشابك الكمومي</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--clr-red);">η</strong></td>
+              <td>عملية التجلي</td>
+              <td>الآلية التي ينتقل بها المطلق إلى المتعدد</td>
+              <td class="math-block">$$\eta = \delta \circ \varepsilon$$</td>
+              <td>تقاس عبر زمن انهيار الدالة الموجية</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--clr-purple);">BS</strong></td>
+              <td>الاستقرار البنيوي</td>
+              <td>درجة تماسك النظام وقربه من المطلق</td>
+              <td>معادلة عامة (انظر قسم المعادلات)</td>
+              <td>يقاس عبر نسبة الإشارة إلى الضوضاء (SNR)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>قيم BS للعناصر الأساسية</h2>
+        <table>
+          <thead><tr><th>العنصر</th><th>BS</th><th>الكسر</th><th>الدلالة</th></tr></thead>
+          <tbody>
+            <tr><td>❶ الواحد المطلق</td><td><span class="bs-badge">1.0000</span></td><td>1</td><td>كمال مطلق</td></tr>
+            <tr><td>0ₚ الإمكان</td><td><span class="bs-badge">0.3333</span></td><td>1/3</td><td>الحد الأدنى من البنية</td></tr>
+            <tr><td>∞ = ① العلاقة</td><td><span class="bs-badge">0.6667</span></td><td>2/3</td><td>توازن التجلي</td></tr>
+            <tr><td>② الثنائية</td><td><span class="bs-badge">0.5714</span></td><td>4/7</td><td></td></tr>
+            <tr><td>③ الثلاثية</td><td><span class="bs-badge">0.4706</span></td><td>8/17</td><td></td></tr>
+            <tr><td>④</td><td><span class="bs-badge">0.3704</span></td><td>10/27</td><td></td></tr>
+            <tr><td>⑤ وما فوق</td><td><span class="bs-badge">2/(2n-3)</span></td><td>عامة</td><td>تناقص مع التعقيد</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-gold">
+          <div class="callout-title">💡 ملاحظة أساسية</div>
+          الاستقرار البنيوي BS يتناقص مع التعقيد العددي، ويبلغ ذروته عند الواحد المطلق (BS=1). هذا يعني أن كل تجلٍّ يبعد النظام عن المطلق ويقلل استقراره.
+        </div>
+
+        <h2>الثالوث التأسيسي — المعادلة المركزية</h2>
+        <div class="math-block">$$\boxed{❶ \oplus 0_p = \textcircled{1} = \infty}$$</div>
+        <p>البرهان: <span class="bs-badge">BS(①) = BS(∞) = 2/3</span> — قيمة ثابتة قابلة للقياس.</p>
+
+        <h2>العمليات الديناميكية (ε, δ, η)</h2>
+        <div class="mermaid-wrap">
+          <div class="mermaid">
+flowchart TD
+    A["❶ الواحد المطلق BS=1"] -->|"ε - هبة"| B["0ₚ الإمكانية BS=1/3"]
+    B -->|"δ - تشكل"| C["∞ اللانهاية BS=2/3"]
+    C -->|"η = δ∘ε - تجلي"| D["① = ∞ الواحد الطبيعي BS=2/3"]
+    D -->|"⊕① s₁"| E["② الثنائية BS=4/7"]
+    E -->|"⊕① s₂"| F["③ الثلاثية BS=8/17"]
+    F -->|"s₃..."| G["④ BS=10/27"]
+    G -->|"..."| H["سلسلة الأعداد الطبيعية"]
+          </div>
+        </div>
+
+        <h2>التمثيل المصفوفي للجبر الثالوثي</h2>
+        <div class="math-block">
+$$❶ = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 0 \end{pmatrix},\quad
+0_p = \begin{pmatrix} 0 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 0 \end{pmatrix},\quad
+\infty = \begin{pmatrix} 0 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{pmatrix}$$
+        </div>
+        <p><strong>عملية الجمع الثالوثي:</strong> $A \oplus B = A \cdot B + B \cdot A$ (ضرب مصفوفي غير تبادلي)</p>
+        <p><strong>الخصائص:</strong> غير تبادلية، غير تجميعية، وجود محايد (0ₚ)، وجود ماص (❶).</p>
+      </div>
+    </div>
+
+    <!-- ── TAB: EQUATIONS ── -->
+    <div class="tab-pane" id="tab-eqs">
+      <div class="hyp-scroll">
+        <h1>📐 المعادلات الرياضية الأساسية</h1>
+
+        <h2>2. من الميتافيزيقا إلى ميكانيكا الكم</h2>
+
+        <h3>2.1 التراكب (Superposition)</h3>
+        <div class="math-block">
+          $$|\psi\rangle = \sum_i c_i |\phi_i\rangle \quad \longleftrightarrow \quad 0_p = \lim_{\epsilon \to 0^+} \epsilon \cdot \infty$$
+        </div>
+        <div class="callout callout-check">
+          <div class="callout-title">✅ التحقق التجريبي</div>
+          قياس الإنتروبيا المعلوماتية: $S_{\text{info}} = -\sum_i |c_i|^2 \log |c_i|^2$
+          <br><strong>التنبؤ:</strong> يجب أن تقترب $BS$ من $\frac{1}{3}$ كلما زاد عدد الحالات في التراكب.
+        </div>
+
+        <h3>2.2 القياس (Measurement)</h3>
+        <div class="math-block">
+          $$\eta(0_p) = \textcircled{1}$$
+          $$\tau_{\text{manifest}} = \frac{\hbar}{\Delta E} \cdot \frac{1}{BS(\text{جهاز})}$$
+        </div>
+        <div class="callout callout-check">
+          <div class="callout-title">✅ التنبؤ المحدد</div>
+          زمن انهيار الدالة الموجية يتناسب عكسياً مع استقرار جهاز القياس.
+          <br><strong>النتيجة المتوقعة:</strong> τ لجهاز BS=0.9 هو نصف قيمته لجهاز BS=0.45.
+        </div>
+
+        <h3>2.3 التشابك (Entanglement)</h3>
+        <div class="math-block">$$\infty = \bigoplus_{i=1}^{\infty} R_i$$</div>
+        <div class="callout callout-check">
+          <div class="callout-title">✅ التنبؤ المحدد</div>
+          $BS$ للحالات المتشابكة النقية = $\frac{2}{3}$ بغض النظر عن عدد الجسيمات.
+        </div>
+
+        <h3>2.4 مبدأ الريبة المعدّل</h3>
+        <div class="math-block">
+          $$\Delta x \cdot \Delta p \geq \frac{\hbar}{2} \cdot \frac{1}{BS(\text{نظام القياس})}$$
+        </div>
+
+        <h2>3. النسبية والزمكان</h2>
+
+        <h3>3.1 المكان والزمان في نظام 𝕊</h3>
+        <div class="math-block">$$ds^2 = g_{\mu\nu}\, dx^\mu dx^\nu + \beta(\tau)\, d\tau^2$$</div>
+
+        <h3>3.2 الجاذبية في نظام 𝕊</h3>
+        <div class="math-block">$$G_{\mu\nu} = 8\pi G\, T_{\mu\nu} + \beta(\tau)\, \nabla_\mu \nabla_\nu \tau$$</div>
+        <div class="callout callout-check">
+          <div class="callout-title">✅ التنبؤ المحدد</div>
+          انحراف عن النسبية العامة في إشارات موجات الجاذبية بنسبة تصل إلى $10^{-4}$ عند ترددات معينة.
+        </div>
+
+        <h2>4. نظرية الأوتار والأبعاد الإضافية</h2>
+        <div class="math-block">
+          $$\text{فضاء كالابي-ياو} \longleftrightarrow \infty \otimes 6$$
+          $$BS(n) = \frac{2}{2n-3}$$
+        </div>
+
+        <h2>9. الاستقرار البنيوي — المعادلة العامة</h2>
+        <div class="math-block">
+          $$BS_\tau(S) = \alpha(\tau)\cdot S_c + \beta(\tau)\cdot S_s + \gamma(\tau)\cdot S_d + \delta(\tau)$$
+        </div>
+
+        <h2>17. ثابت التجلي البوكري</h2>
+        <div class="math-block">$$\boxed{\mathcal{CB} = 6.184033 \times 10^{-42}}$$</div>
+
+        <h3>التنبؤات الرقمية</h3>
+        <div class="math-block">
+          $$f_{\mathcal{CB}} = \mathcal{CB} \cdot \frac{c}{\ell_P} \approx 0.115\ \text{هرتز}$$
+          $$m_{\mathcal{CB}} = \mathcal{CB} \cdot m_P \approx 1.346 \times 10^{-49}\ \text{كغ}$$
+        </div>
+
+        <div class="callout callout-gold">
+          <div class="callout-title">⚛️ جسيم البوكرون</div>
+          جسيم أولي جديد مرشح للمادة المظلمة بكتلة $m \approx 1.35 \times 10^{-49}$ كغ. يُتوقع رصده في تجارب الكشف المباشر عن المادة المظلمة.
+        </div>
+
+        <h2>5. النموذج الرياضي للوعي</h2>
+        <div class="math-block">
+$$\boxed{\Psi_{\text{Consciousness}} = \oint_{\tau}\! \left[\alpha\cdot BS_{\text{ID}}(\tau) + \beta\cdot BS_{\text{Pot}}(\tau) + \gamma\cdot BS_{\text{Rel}}(\tau)\right]\cdot\eta(\tau)\,d\tau}$$
+$$\alpha = 0.47,\quad \beta = 0.23,\quad \gamma = 0.30$$
+        </div>
+        <div class="callout callout-check">
+          <div class="callout-title">✅ التنبؤ</div>
+          قيمة BS للوعي الإنساني النموذجي ≈ 0.57، وتختلف في حالات الوعي المتغيرة (نوم، غيبوبة، تأمل).
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: PREDICTIONS ── -->
+    <div class="tab-pane" id="tab-pred">
+      <div class="hyp-scroll">
+        <h1>🔬 التنبؤات القابلة للاختبار</h1>
+        <p style="color:var(--clr-muted);margin-bottom:1.2rem;">8 تنبؤات محددة وقابلة للدحض مع بروتوكولات تجريبية تفصيلية.</p>
+
+        <div class="pred-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>التنبؤ</th>
+              <th>البروتوكول</th>
+              <th>التكلفة (م$)</th>
+              <th>المدة</th>
+              <th>المردود</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong style="color:var(--clr-teal);">P1</strong></td>
+              <td>تردد 0.1 Hz في طيف CMB</td>
+              <td>تحليل بيانات Planck و CMB-S4</td>
+              <td>2</td>
+              <td>1 سنة</td>
+              <td>جائزة نوبل، تمويل غير محدود</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--clr-teal);">P2</strong></td>
+              <td>قوة كازيمير إضافية ~10⁻⁵⁰ N</td>
+              <td>مقياس تداخل نانوي مبرد إلى 10 mK</td>
+              <td>15</td>
+              <td>3 سنوات</td>
+              <td>براءة اختراع، شركة بـ 500م$</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--clr-teal);">P3</strong></td>
+              <td>تثبيط النيوترينو ~10⁻⁷¹</td>
+              <td>تحليل بيانات SN1987A + DUNE</td>
+              <td>5</td>
+              <td>2 سنتان</td>
+              <td>فهم أعمق للمادة المظلمة</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--clr-gold);">P4</strong></td>
+              <td>جسيم البوكرون m ≈ 1.35×10⁻⁴⁹ كغ</td>
+              <td>تجارب كشف مباشر عن المادة المظلمة</td>
+              <td>30</td>
+              <td>5 سنوات</td>
+              <td>اكتشاف القرن، تريليونات الدولارات</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--clr-teal);">P5</strong></td>
+              <td>تحسين TSP إلى O(n² log n)</td>
+              <td>محاكاة حاسوبية TNN على GPU/TPU</td>
+              <td>8</td>
+              <td>2 سنتان</td>
+              <td>ثورة في علم البيانات، مليارات$</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--clr-teal);">P6</strong></td>
+              <td>BS للوعي الإنساني ≈ 0.57</td>
+              <td>تجارب سريرية EEG+fMRI على 1000 متطوع</td>
+              <td>3</td>
+              <td>1.5 سنة</td>
+              <td>جهاز BCS، سوق 10م$ في 5 سنوات</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--clr-teal);">P7</strong></td>
+              <td>صحة معادلات أينشتاين المعدلة</td>
+              <td>تحليل بيانات LIGO/Virgo/LISA</td>
+              <td>12</td>
+              <td>4 سنوات</td>
+              <td>نموذج جديد للجاذبية، تفسير طاقة مظلمة</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--clr-teal);">P8</strong></td>
+              <td>نمو الجسيمات النانوية بنمط BS(p)</td>
+              <td>تجارب كيمياء نانوية موجهة</td>
+              <td>10</td>
+              <td>3 سنوات</td>
+              <td>مواد جديدة، حفازات، موصلات فائقة</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h2>الإجابات على أسئلة الميتافيزيقا الكبرى</h2>
+        <table>
+          <thead><tr><th>السؤال</th><th>إجابة نظام 𝕊</th></tr></thead>
+          <tbody>
+            <tr><td>هل الوجود واحد أم متعدد؟</td><td>واحد في مصدره (❶)، متعدد في تجلياته (①، ②، ...)</td></tr>
+            <tr><td>هل التغير حقيقي؟</td><td>التغير هو انتقال في فضاء التجلي τ، حقيقي لكن ليس جوهراً</td></tr>
+            <tr><td>ما اللانهاية؟</td><td>نوعان: علائقية (∞) ومطلقة (❶) غير مشروطة</td></tr>
+            <tr><td>ما المكان؟</td><td>تجلٍّ للعلاقات ∞ عند مستوى معين من τ</td></tr>
+            <tr><td>ما الزمان؟</td><td>معامل التجلي τ نفسه</td></tr>
+            <tr><td>ما الجوهر؟</td><td>ما يمثل ❶ في أي نظام، ودرجة حضوره هي BS</td></tr>
+            <tr><td>ما العلة الأولى؟</td><td>❶ الذي يهب ذاته (ε) فيحرك الإمكان دون أن يتحرك</td></tr>
+            <tr><td>هل يمكن معرفة المطلق؟</td><td>لا مباشرة، لكن يمكن الاقتراب منه عبر تجلياته وقياس BS</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── TAB: PROJECTS ── -->
+    <div class="tab-pane" id="tab-proj">
+      <div class="hyp-scroll">
+        <h1>💡 المشاريع والابتكارات</h1>
+        <p style="color:var(--clr-muted);">5 مشاريع ابتكارية قابلة للتنفيذ مستندة مباشرة إلى فرضية البيان البوكري.</p>
+
+        <div class="project-card">
+          <h4>🔬 المشروع الأول: مصادم "البوكرون" الافتراضي</h4>
+          <ul>
+            <li><strong>الهدف:</strong> بناء محاكاة حاسوبية فائقة الدقة (Digital Twin) باستخدام خوارزميات نظام 𝕊</li>
+            <li><strong>الابتكار:</strong> خوارزميات محاكاة أسرع بمقدار 10⁶ مرة من Monte Carlo التقليدية</li>
+            <li><strong>الموارد:</strong> 5 مليون دولار — مدة سنتان</li>
+            <li><strong>العائد:</strong> تسريع اكتشاف المادة المظلمة بنسبة 70%، بيع تراخيص لـ CERN و Fermilab</li>
+          </ul>
+        </div>
+
+        <div class="project-card">
+          <h4>🩺 المشروع الثاني: مقياس الاستقرار البنيوي (BS-Meter)</h4>
+          <ul>
+            <li><strong>الهدف:</strong> جهاز إلكتروني-ضوئي محمول يقيس معامل BS لأي نظام في ثوانٍ</li>
+            <li><strong>الابتكار:</strong> دمج قياسات الإنتروبيا والتشابك الكمومي في شريحة واحدة</li>
+            <li><strong>الموارد:</strong> 15 مليون دولار — مدة 3 سنوات</li>
+            <li><strong>العائد:</strong> تشخيص سرطاني غير جراحي، مراقبة جودة صناعية. السوق: 50 مليار$/سنة</li>
+          </ul>
+        </div>
+
+        <div class="project-card">
+          <h4>🤖 المشروع الثالث: الشبكة العصبية الثالوثية (TNN)</h4>
+          <ul>
+            <li><strong>الهدف:</strong> ذكاء اصطناعي يعتمد على الجبر الثالوثي بدلاً من الجبر الخطي التقليدي</li>
+            <li><strong>الابتكار:</strong> ذاكرة داخلية ديناميكية (بعد τ) تمكن التعلم المستمر دون نسيان</li>
+            <li><strong>الموارد:</strong> 25 مليون دولار — مدة 4 سنوات</li>
+            <li><strong>العائد:</strong> حل مشاكل NP-hard، قيادة ذاتية، اكتشاف أدوية. القيمة المتوقعة: 100 مليار$</li>
+          </ul>
+        </div>
+
+        <div class="project-card">
+          <h4>🔐 المشروع الرابع: إنترنت كمومي فائق الأمان</h4>
+          <ul>
+            <li><strong>الهدف:</strong> بروتوكول تشفير كمومي يعتمد على معامل التجلي τ كبعد إضافي</li>
+            <li><strong>الابتكار:</strong> مفتاح تشفير متغير باستمرار يعتمد على حالة τ للنظام</li>
+            <li><strong>الموارد:</strong> 40 مليون دولار — مدة 5 سنوات</li>
+            <li><strong>العائد:</strong> ريادة عالمية في الاتصالات الكمومية. السوق: 200 مليار$ بحلول 2035</li>
+          </ul>
+        </div>
+
+        <div class="project-card">
+          <h4>🚀 المشروع الخامس: دفع أيوني جديد لاستكشاف الفضاء</h4>
+          <ul>
+            <li><strong>الهدف:</strong> محرك دفع أيوني نانوي يستفيد من تذبذبات التردد $f_{\mathcal{CB}} \approx 0.1$ Hz</li>
+            <li><strong>الابتكار:</strong> استخدام رنين كازيمير المعدل لتوليد قوة دفع بدون وقود كيميائي</li>
+            <li><strong>الموارد:</strong> 100 مليون دولار — مدة 7 سنوات</li>
+            <li><strong>العائد:</strong> عقود حصرية مع NASA, ESA, SpaceX. مليارات من خدمات الإطلاق الفضائي</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: INVESTMENT ── -->
+    <div class="tab-pane" id="tab-invest">
+      <div class="hyp-scroll">
+        <h1>💰 نموذج الاستثمار والعوائد المتوقعة</h1>
+
+        <div class="callout callout-gold">
+          <div class="callout-title">📊 إجمالي الاستثمار المطلوب: ~185 مليون دولار على 7 سنوات</div>
+          نموذج استثماري متعدد المراحل يوضح كيفية تحويل نجاح التنبؤات إلى عوائد مالية هائلة.
+        </div>
+
+        <h2>المرحلة الأولى: التمهيدية (1-2 سنة)</h2>
+        <div class="project-card" style="border-left-color:var(--clr-teal);">
+          <h4>💵 استثمار: 20 مليون دولار</h4>
+          <ul>
+            <li>التحقق من التنبؤات الأقل تكلفة (P1, P6)</li>
+            <li>بناء فريق بحثي أساسي وتسجيل براءات اختراع أولية</li>
+            <li><strong>العوائد:</strong> تمويل حكومي وأكاديمي، تقييم شركة ناشئة: 200 مليون$</li>
+          </ul>
+        </div>
+
+        <h2>المرحلة الثانية: النمو (2-4 سنوات)</h2>
+        <div class="project-card" style="border-left-color:var(--clr-purple);">
+          <h4>💵 استثمار: 80 مليون دولار</h4>
+          <ul>
+            <li>تطوير النماذج الأولية (P2, P5)، إجراء تجارب أكثر تكلفة (P4, P7)</li>
+            <li>التعاقد مع مختبرات كبرى (CERN, NASA)</li>
+            <li><strong>العوائد:</strong> بيع التراخيص الأولى، تقييم الشركة: 5 مليار$ (يونيكورن)</li>
+          </ul>
+        </div>
+
+        <h2>المرحلة الثالثة: الهيمنة على السوق (4-7 سنوات)</h2>
+        <div class="project-card" style="border-left-color:var(--clr-gold);">
+          <h4>💵 استثمار: 200 مليون دولار</h4>
+          <ul>
+            <li>إطلاق المنتجات النهائية (BS-Meter، TNN، اتصال كمومي)</li>
+            <li>شراكات استراتيجية مع Google, IBM, Lockheed Martin</li>
+            <li><strong>العوائد:</strong> إيرادات سنوية تتجاوز 2 مليار$، تقييم الشركة: 100 مليار$ — IPO ضخم</li>
+          </ul>
+        </div>
+
+        <h2>المرحلة الرابعة: التحول الحضاري (7-15 سنة)</h2>
+        <div class="project-card" style="border-left-color:var(--clr-red);">
+          <h4>💵 استثمار: غير محدود</h4>
+          <ul>
+            <li>محرك الدفع الأيوني الجديد، أول حاسوب كمومي ثالوثي</li>
+            <li>تطبيق النظام في الطاقة والطب التجديدي</li>
+            <li><strong>العوائد:</strong> تغيير جذري في أسواق الطاقة والنقل — قيمة اقتصادية غير محدودة</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: METAPHYSICS ── -->
+    <div class="tab-pane" id="tab-meta">
+      <div class="hyp-scroll">
+        <h1>🌌 الأسس الفلسفية للنظام 𝕊</h1>
+
+        <h2>عمل بوكر الرياضي</h2>
+        <p>يمتد عملي تحت اسم مختصر "بوكر" على مدار عقد من الزمن، محاولاً الإجابة عن سؤال جوهري: <em>كيف يمكن للرياضيات أن تكون لغة للوجود وليس مجرد أداة للعد؟</em></p>
+        <p>انطلق من نقد الأسس الكلاسيكية (ZFC، منطق راسل، مبرهنات غودل) وصولاً إلى بناء نظام بديل قائم على ثلاثية تأسيسية:</p>
+        <ul style="padding-right:1.2rem;line-height:2.2;color:#ddd;">
+          <li>❶ الواحد المطلق (مصدر غير عددي)</li>
+          <li>0ₚ الصفر الفلسفي (إمكانية محضة)</li>
+          <li>∞ اللانهاية العلائقية (فضاء التفاعل)</li>
+        </ul>
+
+        <h2>النموذج الرياضي للوعي</h2>
+        <div class="math-block">
+$$\Psi_{\text{Consciousness}} = \oint_{\tau}\!\left[\alpha\cdot BS_{\text{ID}} + \beta\cdot BS_{\text{Pot}} + \gamma\cdot BS_{\text{Rel}}\right]\cdot\eta(\tau)\,d\tau$$
+        </div>
+        <table>
+          <thead><tr><th>المعامل</th><th>القيمة</th><th>المصدر</th><th>طريقة القياس</th></tr></thead>
+          <tbody>
+            <tr><td>α (الهوية)</td><td>0.47</td><td>BS_ID</td><td>EEG — ثبات الموجات الدماغية</td></tr>
+            <tr><td>β (الإمكانية)</td><td>0.23</td><td>BS_Pot</td><td>الإنتروبيا الإدراكية</td></tr>
+            <tr><td>γ (العلاقة)</td><td>0.30</td><td>BS_Rel</td><td>fMRI — الارتباط المتبادل</td></tr>
+          </tbody>
+        </table>
+
+        <h2>ثابت التجلي البوكري — التحليل المعمّق</h2>
+        <div class="math-block">$$\mathcal{CB} = 6.184033 \times 10^{-42}$$</div>
+        <div class="callout callout-red">
+          <div class="callout-title">⚠️ ملاحظة صادقة وجوهرية</div>
+          الثابت 𝒞ℬ هو قيمة مرشحة (Ansatz) مستنبطة من بنية النظام، تحتاج إلى التأكيد التجريبي. لا يوجد اشتقاق رياضي محكم حتى الآن يؤدي بشكل صريح لهذه القيمة، وهذا يمثل تحدياً مفتوحاً وفرصة بحثية رئيسية.
+        </div>
+
+        <div class="math-block">
+$$f_{\mathcal{CB}} = \mathcal{CB} \cdot \frac{c}{\ell_P} \approx 0.115\ \text{هرتز}$$
+$$m_{\mathcal{CB}} = \mathcal{CB} \cdot m_P \approx 1.346 \times 10^{-49}\ \text{كغ (كتلة البوكرون)}$$
+        </div>
+
+        <h2>🏝️ الخاتمة: النسخة المطورة 2026</h2>
+        <div class="callout callout-gold">
+          <div class="callout-title">🌟 رسالة ختامية</div>
+          هذه النسخة المطورة من الأطروحة البوكرية ليست مجرد نظرية، بل هي <strong>خارطة طريق للثورة العلمية والتقنية القادمة</strong>. إنها تنتقل من الفلسفة إلى الفيزياء، ومن الرياضيات إلى الابتكار، ومن التنبؤ إلى الاستثمار. النجاح في اختبار أي من هذه التنبؤات سيعني نقلة نوعية للبشرية.
+        </div>
+
+        <div class="mermaid-wrap">
+          <div class="mermaid">
+graph TD
+    Final["🏝️ النسخة المطورة 2026 من الأطروحة البوكرية — 8 تنبؤات قابلة للاختبار — 5 مشاريع ابتكارية — خطة استثمارية لنمو هائل"]
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: HISTORY ── -->
+    <div class="tab-pane" id="tab-hist">
+      <div class="hyp-scroll">
+        <h1>📜 التطور التاريخي للمفاهيم الثالوثية</h1>
+        <table>
+          <thead>
+            <tr><th>الفترة</th><th>الفيلسوف/العالم</th><th>المساهمة</th><th>الصلة بنظام 𝕊</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>550 ق.م.</td><td>فيثاغورس</td><td>"كل شيء عدد" — الأسس الرياضية للكون</td><td>الأسس الرياضية للنظام 𝕊</td></tr>
+            <tr><td>500 ق.م.</td><td>بارمنيدس</td><td>تمييز الوجود عن العدم — مفهوم الواحد المطلق</td><td>أساس ❶ (الواحد المطلق)</td></tr>
+            <tr><td>380 ق.م.</td><td>أفلاطون</td><td>نظرية المثل — التمييز بين العالم المثالي والمادي</td><td>التمييز بين المطلق والنسبي</td></tr>
+            <tr><td>850 م.</td><td>الكندي</td><td>التمييز بين الواحد الحقيقي والواحد الرياضي</td><td>❶ ≠ ① (تمييز الواحد المطلق)</td></tr>
+            <tr><td>950 م.</td><td>الفارابي</td><td>نظرية الفيض — انتقال الوجود من الواحد إلى الكثرة</td><td>η كعملية انتقال وتجلي</td></tr>
+            <tr><td>1030 م.</td><td>ابن سينا</td><td>الوجوب والإمكان — التمييز بين الوجود الضروري والممكن</td><td>0ₚ كإمكانية محضة</td></tr>
+            <tr><td>1637</td><td>ديكارت</td><td>الثنائية العقل-جسد</td><td>التمييز بين الأنظمة المطلقة والنسبية</td></tr>
+            <tr><td>1781</td><td>كانت</td><td>نقد العقل الخالص — حدود المعرفة البشرية</td><td>حدود الأنظمة الصورية في 𝕊</td></tr>
+            <tr><td>1807</td><td>هيجل</td><td>الجدلية — التطور عبر التناقض والتركيب</td><td>$❶ \oplus 0_p = \infty$ (التركيب الثالوثي)</td></tr>
+            <tr><td>1931</td><td>غودل</td><td>نظريات عدم الاكتمال</td><td>حدود الأنظمة الصورية في 𝕊</td></tr>
+            <tr><td>1963</td><td>كوهين</td><td>استقلال الفرضيات — تعدد المنطق الرياضي</td><td>تعدد المنطق والتفسيرات في 𝕊</td></tr>
+            <tr><td>1984</td><td>نظرية الأوتار</td><td>الأبعاد الإضافية — توحيد القوى الفيزيائية</td><td>فضاء متعدد الأبعاد في 𝕊</td></tr>
+            <tr><td>2026</td><td><strong style="color:var(--clr-gold);">النظام 𝕊 (النسخة المطورة)</strong></td><td>الثالوث الرياضي + قابلية الاختبار + مشاريع ابتكارية</td><td>تكامل كامل + تنبؤات قابلة للقياس + خطة استثمارية</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── TAB: EXERCISES ── -->
+    <div class="tab-pane" id="tab-exercises">
+      <div class="hyp-scroll">
+        <h1>✏️ التمارين الرياضية مع الحلول</h1>
+
+        <div class="callout callout-check">
+          <div class="callout-title">تمرين 1 — حساب BS لتراكب كمومي</div>
+          جسيم في بئر جهد: $|\psi\rangle = \sqrt{0.3}|1\rangle + \sqrt{0.7}|2\rangle$. احسب BS.
+          <div class="math-block" style="margin-top:.7rem;">
+            $$BS = 0.3 \times BS(1) + 0.7 \times BS(2) = 0.3 \times 0.7 + 0.7 \times 0.5714 = 0.21 + 0.4 = \mathbf{0.61}$$
+          </div>
+        </div>
+
+        <div class="callout callout-check">
+          <div class="callout-title">تمرين 2 — تأثير القياس</div>
+          جهاز قياس BS=0.85، η(τ)=e^{-2τ}، احتمال تقليدي 0.4. ما الاحتمال عند τ=0.2؟
+          <div class="math-block" style="margin-top:.7rem;">
+            $$P = 0.4 \times 0.85 \times e^{-0.4} = 0.34 \times 0.6703 = \mathbf{0.2279}$$
+          </div>
+        </div>
+
+        <div class="callout callout-check">
+          <div class="callout-title">تمرين 3 — حالة Bell المتشابكة</div>
+          احسب BS لحالة $|\Phi^+\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle)$.
+          <div class="math-block" style="margin-top:.7rem;">
+            $$BS = BS(\infty) = \frac{2}{3} \approx \mathbf{0.6667}$$
+          </div>
+          كونها تجلٍّ لعلاقة محضة (∞).
+        </div>
+
+        <div class="callout callout-check">
+          <div class="callout-title">تمرين 4 — مبدأ الريبة المعدّل</div>
+          جهاز BS=0.6، Δx=0.5 (وحدات طبيعية ℏ=1). أوجد أقل Δp.
+          <div class="math-block" style="margin-top:.7rem;">
+            $$\Delta p \geq \frac{1}{2} \cdot \frac{1}{0.6} \cdot \frac{1}{0.5} = \mathbf{1.6\overline{6}}$$
+          </div>
+        </div>
+
+        <div class="callout callout-check">
+          <div class="callout-title">تمرين 5 — تطبيق على ثابت التجلي</div>
+          احسب التردد لأقل فجوة طاقة $\Delta E_{\min} = \mathcal{CB} \cdot E_P$.
+          <div class="math-block" style="margin-top:.7rem;">
+            $$f = \frac{\mathcal{CB}\cdot E_P}{h} = \frac{6.184\times10^{-42}\times 1.956\times10^{9}}{6.626\times10^{-34}} \approx \mathbf{18.26}\ \text{هرتز}$$
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="site-footer">
+    <p><strong>✍️ م. أحمد علي بوكر نسيب</strong></p>
+    <p>📧 <a href="mailto:Eng.ahmad.2011bokar@gmail.com">Eng.ahmad.2011bokar@gmail.com</a></p>
+    <p>🔗 <a href="https://github.com/bouker/thesis-S" target="_blank">github.com/bouker/thesis-S</a></p>
+    <p style="margin-top:.5rem;font-size:.75rem;">🔬 التنبؤات القابلة للاختبار: CMB (~0.1 Hz) | كازيمير | نيوترينوات | مادة مظلمة (بوكرون)</p>
+    <p style="font-size:.75rem;">💡 المشاريع: BS-Meter | TNN | اتصال كمومي | دفع أيوني</p>
+    <p style="font-size:.7rem;color:#555;margin-top:.5rem;">جميع الحقوق محفوظة © 2026 — النسخة المطورة والنهائية</p>
+  </footer>
+
+</div><!-- end #main-layout -->
+
+<!-- ══════════════════════════════════════════
+     THREE.JS SIMULATION
+══════════════════════════════════════════ -->
+<script>
+(function(){
+"use strict";
+
+// ── State ──────────────────────────────────
+let eta = 0.5, bs = 0.5, tau = 3.0;
+let cycleActive = false, cycleDir = 1;
+let explodePower = 0;
+let clock_t = 0;
+const TWO_PI = Math.PI * 2;
+
+// ── Scene setup ────────────────────────────
+const canvas = document.getElementById('sim-canvas');
+const wrap   = document.getElementById('canvas-wrap');
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x070711, 1);
+renderer.toneMapping = THREE.ReinhardToneMapping;
+renderer.toneMappingExposure = 1.4;
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, 1, 0.01, 1000);
+camera.position.set(0, 0, 8);
+
+// Resize handler
+function resize(){
+  const w = wrap.clientWidth, h = wrap.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+resize();
+window.addEventListener('resize', resize);
+
+// ── OrbitControls (manual) ──────────────────
+let isDragging = false, prevMouse = {x:0, y:0};
+let rotX = 0, rotY = 0;
+const pivotGroup = new THREE.Group();
+scene.add(pivotGroup);
+
+canvas.addEventListener('mousedown',  e => { isDragging=true; prevMouse={x:e.clientX,y:e.clientY}; });
+canvas.addEventListener('touchstart', e => { isDragging=true; prevMouse={x:e.touches[0].clientX,y:e.touches[0].clientY}; });
+window.addEventListener('mouseup',   () => isDragging=false);
+window.addEventListener('touchend',  () => isDragging=false);
+canvas.addEventListener('mousemove', e => {
+  if(!isDragging) return;
+  rotY += (e.clientX - prevMouse.x) * 0.008;
+  rotX += (e.clientY - prevMouse.y) * 0.008;
+  prevMouse = {x:e.clientX, y:e.clientY};
+});
+canvas.addEventListener('touchmove', e => {
+  if(!isDragging) return;
+  rotY += (e.touches[0].clientX - prevMouse.x) * 0.008;
+  rotX += (e.touches[0].clientY - prevMouse.y) * 0.008;
+  prevMouse = {x:e.touches[0].clientX,y:e.touches[0].clientY};
+});
+canvas.addEventListener('wheel', e => {
+  camera.position.z = Math.max(3, Math.min(20, camera.position.z + e.deltaY * 0.01));
+});
+
+// ── Lights ─────────────────────────────────
+const ambientLight = new THREE.AmbientLight(0x1a1a3a, 1.5);
+scene.add(ambientLight);
+
+const pointLight1 = new THREE.PointLight(0xFFD700, 3, 20);
+scene.add(pointLight1);
+
+const pointLight2 = new THREE.PointLight(0x4ECDC4, 2, 15);
+scene.add(pointLight2);
+
+const pointLight3 = new THREE.PointLight(0x9C27B0, 1.5, 12);
+pointLight3.position.set(-4, 2, 2);
+scene.add(pointLight3);
+
+// ── 1. Central sphere (❶ — الواحد المطلق) ──
+const coreGeo = new THREE.SphereGeometry(0.85, 64, 64);
+const coreMat = new THREE.MeshStandardMaterial({
+  color: 0xFFD700,
+  emissive: 0xFFAA00,
+  emissiveIntensity: 1.2,
+  metalness: 0.6,
+  roughness: 0.2,
+});
+const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+pivotGroup.add(coreMesh);
+
+// Inner glow sphere
+const glowGeo = new THREE.SphereGeometry(1.0, 32, 32);
+const glowMat = new THREE.MeshBasicMaterial({
+  color: 0xFFD700,
+  transparent: true,
+  opacity: 0.08,
+  side: THREE.BackSide,
+});
+const glowMesh = new THREE.Mesh(glowGeo, glowMat);
+pivotGroup.add(glowMesh);
+
+// ── 2. Particle cloud (0ₚ — الإمكان) ─────
+const PARTICLE_COUNT = 2500;
+const pPositions = new Float32Array(PARTICLE_COUNT * 3);
+const pSpeeds    = new Float32Array(PARTICLE_COUNT * 3);
+const pPhases    = new Float32Array(PARTICLE_COUNT);
+const pRadii     = new Float32Array(PARTICLE_COUNT);
+
+for(let i=0; i<PARTICLE_COUNT; i++){
+  const r     = 1.5 + Math.random() * 3.5;
+  const theta = Math.random() * TWO_PI;
+  const phi   = Math.acos(2*Math.random()-1);
+  pPositions[i*3]   = r * Math.sin(phi) * Math.cos(theta);
+  pPositions[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+  pPositions[i*3+2] = r * Math.cos(phi);
+  pSpeeds[i*3]   = (Math.random()-.5)*.012;
+  pSpeeds[i*3+1] = (Math.random()-.5)*.012;
+  pSpeeds[i*3+2] = (Math.random()-.5)*.012;
+  pPhases[i]  = Math.random() * TWO_PI;
+  pRadii[i]   = r;
+}
+
+const pGeo = new THREE.BufferGeometry();
+pGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
+const pMat = new THREE.PointsMaterial({
+  color: 0xaaaadd,
+  size: 0.055,
+  transparent: true,
+  opacity: 0.7,
+  sizeAttenuation: true,
+  depthWrite: false,
+});
+const points = new THREE.Points(pGeo, pMat);
+pivotGroup.add(points);
+
+// ── 3. Connection lines (∞ — العلاقات) ───
+const MAX_LINES = 800;
+const linePositions = new Float32Array(MAX_LINES * 6);
+const lineGeo = new THREE.BufferGeometry();
+lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+const lineMat = new THREE.LineSegments(lineGeo,
+  new THREE.LineBasicMaterial({
+    color: 0x4ECDC4,
+    transparent: true,
+    opacity: 0.35,
+    depthWrite: false,
+    linewidth: 1,
+  })
+);
+pivotGroup.add(lineMat);
+
+// ── 4. Manifested sphere (① — التجلي) ───
+const manGeo = new THREE.SphereGeometry(0.55, 32, 32);
+const manMat = new THREE.MeshStandardMaterial({
+  color: 0xFF6B6B,
+  emissive: 0xFF3333,
+  emissiveIntensity: 0,
+  metalness: 0.3,
+  roughness: 0.4,
+  transparent: true,
+  opacity: 0,
+});
+const manMesh = new THREE.Mesh(manGeo, manMat);
+manMesh.position.set(2.8, 0, 0);
+pivotGroup.add(manMesh);
+
+// ── 5. Ring (∞ symbol representation) ───
+const torusGeo = new THREE.TorusGeometry(2.2, 0.03, 8, 80);
+const torusMat = new THREE.MeshBasicMaterial({
+  color: 0x4ECDC4,
+  transparent: true,
+  opacity: 0.18,
+});
+const torusMesh = new THREE.Mesh(torusGeo, torusMat);
+torusMesh.rotation.x = Math.PI * 0.4;
+pivotGroup.add(torusMesh);
+
+const torusGeo2 = new THREE.TorusGeometry(2.0, 0.025, 8, 80);
+const torusMat2 = new THREE.MeshBasicMaterial({ color:0x9C27B0, transparent:true, opacity:0.12 });
+const torusMesh2 = new THREE.Mesh(torusGeo2, torusMat2);
+torusMesh2.rotation.x = -Math.PI*0.3;
+torusMesh2.rotation.y = Math.PI*0.2;
+pivotGroup.add(torusMesh2);
+
+// ── Helper: color from tau ─────────────────
+function tauColor(t){
+  // t: 0→10, 0=purple, 5=teal, 10=gold/red
+  const norm = t / 10;
+  if(norm < 0.5){
+    const f = norm * 2;
+    return new THREE.Color(
+      0.61*(1-f) + 0.30*f,
+      0.16*(1-f) + 0.80*f,
+      0.69*(1-f) + 0.76*f
+    );
+  } else {
+    const f = (norm-0.5)*2;
+    return new THREE.Color(
+      0.30*(1-f) + 1.0*f,
+      0.80*(1-f) + 0.42*f,
+      0.76*(1-f) + 0.0*f
+    );
+  }
+}
+
+// ── Helper: state label ──────────────────
+function stateLabel(){
+  if(eta < 0.3) return 'إمكانية محضة';
+  if(eta < 0.7) return 'تجلٍّ';
+  return 'تجلّى كاملاً';
+}
+
+// ── Update connections ───────────────────
+const tmpVecA = new THREE.Vector3();
+const tmpVecB = new THREE.Vector3();
+
+function updateConnections(){
+  const pos = pGeo.attributes.position.array;
+  const numLines = Math.floor(bs * MAX_LINES);
+  let li = 0;
+  const step = Math.max(1, Math.floor(PARTICLE_COUNT / (numLines * 2 + 1)));
+  for(let i=0; li < numLines && i < PARTICLE_COUNT-step; i+=step){
+    const j = (i + step + Math.floor(Math.random()*step*3)) % PARTICLE_COUNT;
+    linePositions[li*6]   = pos[i*3];
+    linePositions[li*6+1] = pos[i*3+1];
+    linePositions[li*6+2] = pos[i*3+2];
+    linePositions[li*6+3] = pos[j*3];
+    linePositions[li*6+4] = pos[j*3+1];
+    linePositions[li*6+5] = pos[j*3+2];
+    li++;
+  }
+  lineGeo.setDrawRange(0, li*2);
+  lineGeo.attributes.position.needsUpdate = true;
+}
+
+// ── Animation loop ────────────────────────
+let frameCount = 0;
+function animate(){
+  requestAnimationFrame(animate);
+  frameCount++;
+  clock_t += 0.016;
+
+  // Cycle mode
+  if(cycleActive){
+    eta += 0.004 * cycleDir;
+    if(eta >= 1){ eta=1; cycleDir=-1; }
+    if(eta <= 0){ eta=0; cycleDir=1; }
+    document.getElementById('sl-eta').value = eta;
+    updateSliderFill('sl-eta', 'lbl-eta', eta, 2);
+  }
+
+  // Explode decay
+  if(explodePower > 0) explodePower = Math.max(0, explodePower - 0.02);
+
+  // Pivot rotation (auto + user)
+  pivotGroup.rotation.y += 0.003;
+  pivotGroup.rotation.x = rotX * 0.6;
+  pivotGroup.rotation.y += rotY * 0.02;
+  rotY *= 0.92;
+
+  // Core pulse
+  const pulse = 1 + 0.06 * Math.sin(clock_t * 2.5) * bs;
+  coreMesh.scale.setScalar(pulse);
+  glowMesh.scale.setScalar(1 + 0.15 * bs + 0.08 * Math.sin(clock_t*1.8));
+  coreMat.emissiveIntensity = 0.8 + 0.6 * bs + 0.3 * Math.sin(clock_t*3);
+  glowMat.opacity = 0.04 + 0.1 * bs;
+
+  // Lights
+  pointLight1.position.set(
+    2 * Math.sin(clock_t * 0.7),
+    1.5 * Math.cos(clock_t * 0.5),
+    2 * Math.cos(clock_t * 0.7)
+  );
+  pointLight1.intensity = 2 + 2 * bs;
+  pointLight2.position.set(
+    -2.5 * Math.cos(clock_t * 0.4),
+    1.8 * Math.sin(clock_t * 0.6),
+    -1.5
+  );
+  pointLight2.intensity = 1 + eta * 2;
+
+  // Tau color
+  const tc = tauColor(tau);
+  pMat.color = tc;
+  lineMat.material.color = tc.clone().lerp(new THREE.Color(0x4ECDC4), 0.5);
+
+  // Particle update
+  const pos = pGeo.attributes.position.array;
+  const collapseRadius = 0.9 + (1 - eta) * 3.2;
+  const expandFactor   = 1 - eta;
+  const noiseMag = (1 - bs) * 0.04;
+  const expMag = explodePower * 0.3;
+
+  for(let i=0; i<PARTICLE_COUNT; i++){
+    const ix = i*3, iy = i*3+1, iz = i*3+2;
+
+    // Brownian noise
+    pos[ix] += pSpeeds[ix] + noiseMag*(Math.random()-.5);
+    pos[iy] += pSpeeds[iy] + noiseMag*(Math.random()-.5);
+    pos[iz] += pSpeeds[iz] + noiseMag*(Math.random()-.5);
+
+    // Radial drift toward collapse radius
+    const dx = pos[ix], dy = pos[iy], dz = pos[iz];
+    const r = Math.sqrt(dx*dx+dy*dy+dz*dz) || 0.001;
+    const pull = (r - collapseRadius) * 0.015 * eta;
+    pos[ix] -= (dx/r) * pull;
+    pos[iy] -= (dy/r) * pull;
+    pos[iz] -= (dz/r) * pull;
+
+    // Explode
+    if(expMag > 0){
+      pos[ix] += (dx/r) * expMag;
+      pos[iy] += (dy/r) * expMag;
+      pos[iz] += (dz/r) * expMag;
+    }
+
+    // Orbital drift (phase)
+    const phBase = clock_t * 0.15 + pPhases[i];
+    pos[ix] += Math.cos(phBase) * 0.003 * expandFactor;
+    pos[iy] += Math.sin(phBase * 1.3) * 0.003 * expandFactor;
+
+    // Boundary clamp
+    const rNew = Math.sqrt(pos[ix]**2+pos[iy]**2+pos[iz]**2);
+    if(rNew > 6){ pos[ix]*=5.5/rNew; pos[iy]*=5.5/rNew; pos[iz]*=5.5/rNew; }
+    if(rNew < 0.9){ pos[ix]*=1.2/rNew; pos[iy]*=1.2/rNew; pos[iz]*=1.2/rNew; }
+  }
+  pGeo.attributes.position.needsUpdate = true;
+  pMat.opacity = 0.4 + 0.4 * (1 - eta) + 0.15 * bs;
+
+  // Update connections every 3 frames
+  if(frameCount % 3 === 0) updateConnections();
+  lineMat.material.opacity = 0.12 + 0.45 * bs * eta;
+
+  // Manifested sphere
+  const manV = Math.max(0, (eta - 0.7) / 0.3);
+  manMat.opacity = manV;
+  manMat.emissiveIntensity = manV * (1.5 + 0.5 * Math.sin(clock_t*4));
+  manMesh.scale.setScalar(0.5 + manV * 0.8 + explodePower * 0.3);
+  manMesh.position.x = 2.2 + (1-eta)*0.8;
+
+  // Rings
+  torusMesh.rotation.z  += 0.006 * eta;
+  torusMesh2.rotation.y += 0.004 * bs;
+  torusMat.opacity  = 0.08 + 0.2 * bs;
+  torusMat2.opacity = 0.06 + 0.15 * eta;
+
+  // HUD
+  document.getElementById('h-eta').textContent   = eta.toFixed(2);
+  document.getElementById('h-bs').textContent    = bs.toFixed(2);
+  document.getElementById('h-tau').textContent   = tau.toFixed(2);
+  document.getElementById('h-state').textContent = stateLabel();
+
+  renderer.render(scene, camera);
+}
+animate();
+
+// ── Slider helpers ────────────────────────
+function updateSliderFill(id, lblId, val, dec){
+  const el = document.getElementById(id);
+  const pct = ((val - el.min) / (el.max - el.min)) * 100;
+  el.style.setProperty('--pct', pct+'%');
+  if(lblId) document.getElementById(lblId).textContent = val.toFixed ? val.toFixed(dec) : val;
+}
+
+// Initial fill
+updateSliderFill('sl-eta', 'lbl-eta', eta, 2);
+updateSliderFill('sl-bs',  'lbl-bs',  bs,  2);
+updateSliderFill('sl-tau', 'lbl-tau', tau, 2);
+
+document.getElementById('sl-eta').addEventListener('input', function(){
+  eta = +this.value;
+  updateSliderFill('sl-eta','lbl-eta',eta,2);
+});
+document.getElementById('sl-bs').addEventListener('input', function(){
+  bs = +this.value;
+  updateSliderFill('sl-bs','lbl-bs',bs,2);
+});
+document.getElementById('sl-tau').addEventListener('input', function(){
+  tau = +this.value;
+  updateSliderFill('sl-tau','lbl-tau',tau,2);
+});
+
+// Buttons
+document.getElementById('btn-reset').addEventListener('click', ()=>{
+  eta=0.5; bs=0.5; tau=3.0;
+  ['sl-eta','sl-bs','sl-tau'].forEach(id=>{
+    const el=document.getElementById(id);
+    const val = id==='sl-tau'?tau:id==='sl-eta'?eta:bs;
+    el.value=val;
+    updateSliderFill(id,id.replace('sl','lbl'),val,id==='sl-tau'?2:2);
+  });
+  cycleActive=false;
+  document.getElementById('btn-cycle').classList.remove('active');
+  document.getElementById('btn-cycle').textContent='▶ دورة تلقائية';
+});
+
+document.getElementById('btn-cycle').addEventListener('click', function(){
+  cycleActive = !cycleActive;
+  this.classList.toggle('active');
+  this.textContent = cycleActive ? '⏸ إيقاف الدورة' : '▶ دورة تلقائية';
+});
+
+document.getElementById('btn-explode').addEventListener('click', ()=>{
+  explodePower = 1.2;
+  eta = 1.0;
+  document.getElementById('sl-eta').value=1;
+  updateSliderFill('sl-eta','lbl-eta',1,2);
+});
+
+})();
+</script>
+
+<!-- ══ TABS JS ══ -->
+<script>
+(function(){
+  const btns  = document.querySelectorAll('.tab-btn');
+  const panes = document.querySelectorAll('.tab-pane');
+  btns.forEach(btn => {
+    btn.addEventListener('click', ()=>{
+      btns.forEach(b=>b.classList.remove('active'));
+      panes.forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      const id = 'tab-' + btn.dataset.tab;
+      const pane = document.getElementById(id);
+      if(pane) pane.classList.add('active');
+      if(window.MathJax) MathJax.typesetPromise([pane]).catch(()=>{});
+    });
+  });
+})();
+</script>
+
+<!-- ══ MERMAID INIT ══ -->
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  themeVariables: {
+    background: '#0a0a12',
+    primaryColor: '#9C27B0',
+    primaryTextColor: '#ffffff',
+    primaryBorderColor: '#7B1FA2',
+    lineColor: '#4ECDC4',
+    secondaryColor: '#111122',
+    tertiaryColor: '#1a1a2e',
+    edgeLabelBackground: '#0a0a12',
+    clusterBkg: '#111122',
+    titleColor: '#FFD700',
+    nodeTextColor: '#ffffff',
+  },
+  flowchart: { curve: 'basis', htmlLabels: true },
+  fontFamily: 'Tajawal, sans-serif',
+});
+</script>
+
+</body>
+</html>
