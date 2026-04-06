@@ -735,14 +735,14 @@ graph TD
         <h2>العمليات الديناميكية (ε, δ, η)</h2>
         <div class="mermaid-wrap">
           <div class="mermaid">
-graph TD
-    A["❶ الواحد المطلق BS=1"] -->|ε: هبة| B["0ₚ الإمكانية BS=1/3"]
-    B -->|δ: تشكل| C["∞ اللانهاية BS=2/3"]
-    C -->|η = δ∘ε: تجلي| D["① = ∞ الواحد الطبيعي BS=2/3"]
-    D -->|s₁: ⊕①| E["② الثنائية BS=4/7"]
-    E -->|s₂: ⊕①| F["③ الثلاثية BS=8/17"]
-    F -->|s₃| G["④ BS=10/27"]
-    G -->|...| H["سلسلة الأعداد الطبيعية"]
+flowchart TD
+    A["❶ الواحد المطلق BS=1"] -->|"ε - هبة"| B["0ₚ الإمكانية BS=1/3"]
+    B -->|"δ - تشكل"| C["∞ اللانهاية BS=2/3"]
+    C -->|"η = δ∘ε - تجلي"| D["① = ∞ الواحد الطبيعي BS=2/3"]
+    D -->|"⊕① s₁"| E["② الثنائية BS=4/7"]
+    E -->|"⊕① s₂"| F["③ الثلاثية BS=8/17"]
+    F -->|"s₃..."| G["④ BS=10/27"]
+    G -->|"..."| H["سلسلة الأعداد الطبيعية"]
           </div>
         </div>
 
@@ -865,14 +865,70 @@ $$\alpha = 0.47,\quad \beta = 0.23,\quad \gamma = 0.30$$
             </tr>
           </thead>
           <tbody>
-            <tr><td><strong style="color:var(--clr-teal);">P1</strong></td><td>تردد 0.1 Hz في طيف CMB</td><td>تحليل بيانات Planck و CMB-S4</td><td>2</td><td>1 سنة</td><td>جائزة نوبل، تمويل غير محدود</td></tr>
-            <tr><td><strong style="color:var(--clr-teal);">P2</strong></td><td>قوة كازيمير إضافية ~10⁻⁵⁰ N</td><td>مقياس تداخل نانوي مبرد إلى 10 mK</td><td>15</td><td>3 سنوات</td><td>براءة اختراع، شركة بـ 500م$</td></tr>
-            <tr><td><strong style="color:var(--clr-teal);">P3</strong></td><td>تثبيط النيوترينو ~10⁻⁷¹</td><td>تحليل بيانات SN1987A + DUNE</td><td>5</td><td>2 سنتان</td><td>فهم أعمق للمادة المظلمة</td></tr>
-            <tr><td><strong style="color:var(--clr-gold);">P4</strong></td><td>جسيم البوكرون m ≈ 1.35×10⁻⁴⁹ كغ</td><td>تجارب كشف مباشر عن المادة المظلمة</td><td>30</td><td>5 سنوات</td><td>اكتشاف القرن، تريليونات الدولارات</td></tr>
-            <tr><td><strong style="color:var(--clr-teal);">P5</strong></td><td>تحسين TSP إلى O(n² log n)</td><td>محاكاة حاسوبية TNN على GPU/TPU</td><td>8</td><td>2 سنتان</td><td>ثورة في علم البيانات، مليارات$</td></tr>
-            <tr><td><strong style="color:var(--clr-teal);">P6</strong></td><td>BS للوعي الإنساني ≈ 0.57</td><td>تجارب سريرية EEG+fMRI على 1000 متطوع</td><td>3</td><td>1.5 سنة</td><td>جهاز BCS، سوق 10م$ في 5 سنوات</td></tr>
-            <tr><td><strong style="color:var(--clr-teal);">P7</strong></td><td>صحة معادلات أينشتاين المعدلة</td><td>تحليل بيانات LIGO/Virgo/LISA</td><td>12</td><td>4 سنوات</td><td>نموذج جديد للجاذبية، تفسير طاقة مظلمة</td></tr>
-            <tr><td><strong style="color:var(--clr-teal);">P8</strong></td><td>نمو الجسيمات النانوية بنمط BS(p)</td><td>تجارب كيمياء نانوية موجهة</td><td>10</td><td>3 سنوات</td><td>مواد جديدة، حفازات، موصلات فائقة</td></tr>
+            <tr>
+              <td><strong style="color:var(--clr-teal);">P1</strong></td>
+              <td>تردد 0.1 Hz في طيف CMB</td>
+              <td>تحليل بيانات Planck و CMB-S4</td>
+              <td>2</td>
+              <td>1 سنة</td>
+              <td>جائزة نوبل، تمويل غير محدود</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--clr-teal);">P2</strong></td>
+              <td>قوة كازيمير إضافية ~10⁻⁵⁰ N</td>
+              <td>مقياس تداخل نانوي مبرد إلى 10 mK</td>
+              <td>15</td>
+              <td>3 سنوات</td>
+              <td>براءة اختراع، شركة بـ 500م$</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--clr-teal);">P3</strong></td>
+              <td>تثبيط النيوترينو ~10⁻⁷¹</td>
+              <td>تحليل بيانات SN1987A + DUNE</td>
+              <td>5</td>
+              <td>2 سنتان</td>
+              <td>فهم أعمق للمادة المظلمة</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--clr-gold);">P4</strong></td>
+              <td>جسيم البوكرون m ≈ 1.35×10⁻⁴⁹ كغ</td>
+              <td>تجارب كشف مباشر عن المادة المظلمة</td>
+              <td>30</td>
+              <td>5 سنوات</td>
+              <td>اكتشاف القرن، تريليونات الدولارات</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--clr-teal);">P5</strong></td>
+              <td>تحسين TSP إلى O(n² log n)</td>
+              <td>محاكاة حاسوبية TNN على GPU/TPU</td>
+              <td>8</td>
+              <td>2 سنتان</td>
+              <td>ثورة في علم البيانات، مليارات$</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--clr-teal);">P6</strong></td>
+              <td>BS للوعي الإنساني ≈ 0.57</td>
+              <td>تجارب سريرية EEG+fMRI على 1000 متطوع</td>
+              <td>3</td>
+              <td>1.5 سنة</td>
+              <td>جهاز BCS، سوق 10م$ في 5 سنوات</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--clr-teal);">P7</strong></td>
+              <td>صحة معادلات أينشتاين المعدلة</td>
+              <td>تحليل بيانات LIGO/Virgo/LISA</td>
+              <td>12</td>
+              <td>4 سنوات</td>
+              <td>نموذج جديد للجاذبية، تفسير طاقة مظلمة</td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--clr-teal);">P8</strong></td>
+              <td>نمو الجسيمات النانوية بنمط BS(p)</td>
+              <td>تجارب كيمياء نانوية موجهة</td>
+              <td>10</td>
+              <td>3 سنوات</td>
+              <td>مواد جديدة، حفازات، موصلات فائقة</td>
+            </tr>
           </tbody>
         </table>
         </div>
@@ -1148,7 +1204,7 @@ graph TD
 </div><!-- end #main-layout -->
 
 <!-- ══════════════════════════════════════════
-     THREE.JS SIMULATION (UPGRADED)
+     THREE.JS SIMULATION
 ══════════════════════════════════════════ -->
 <script>
 (function(){
@@ -1211,24 +1267,21 @@ canvas.addEventListener('wheel', e => {
   camera.position.z = Math.max(3, Math.min(20, camera.position.z + e.deltaY * 0.01));
 });
 
-// ── Lights (enhanced) ────────────────────────
+// ── Lights ─────────────────────────────────
 const ambientLight = new THREE.AmbientLight(0x1a1a3a, 1.5);
 scene.add(ambientLight);
 
-// Dynamic colored lights
-const lightGold = new THREE.PointLight(0xFFD700, 2, 20);
-lightGold.position.set(2, 1.5, 2);
-scene.add(lightGold);
+const pointLight1 = new THREE.PointLight(0xFFD700, 3, 20);
+scene.add(pointLight1);
 
-const lightTeal = new THREE.PointLight(0x4ECDC4, 1.5, 15);
-lightTeal.position.set(-2, 1, 1.5);
-scene.add(lightTeal);
+const pointLight2 = new THREE.PointLight(0x4ECDC4, 2, 15);
+scene.add(pointLight2);
 
-const lightPurple = new THREE.PointLight(0x9C27B0, 1, 12);
-lightPurple.position.set(1.5, -1, 2);
-scene.add(lightPurple);
+const pointLight3 = new THREE.PointLight(0x9C27B0, 1.5, 12);
+pointLight3.position.set(-4, 2, 2);
+scene.add(pointLight3);
 
-// ── 1. Central sphere (❶) ──────────────────
+// ── 1. Central sphere (❶ — الواحد المطلق) ──
 const coreGeo = new THREE.SphereGeometry(0.85, 64, 64);
 const coreMat = new THREE.MeshStandardMaterial({
   color: 0xFFD700,
@@ -1251,23 +1304,23 @@ const glowMat = new THREE.MeshBasicMaterial({
 const glowMesh = new THREE.Mesh(glowGeo, glowMat);
 pivotGroup.add(glowMesh);
 
-// ── 2. Particle cloud (0ₚ) enhanced ────────
-const PARTICLE_COUNT = 3000;
+// ── 2. Particle cloud (0ₚ — الإمكان) ─────
+const PARTICLE_COUNT = 2500;
 const pPositions = new Float32Array(PARTICLE_COUNT * 3);
 const pSpeeds    = new Float32Array(PARTICLE_COUNT * 3);
 const pPhases    = new Float32Array(PARTICLE_COUNT);
 const pRadii     = new Float32Array(PARTICLE_COUNT);
 
 for(let i=0; i<PARTICLE_COUNT; i++){
-  const r     = 1.5 + Math.random() * 4.0;
+  const r     = 1.5 + Math.random() * 3.5;
   const theta = Math.random() * TWO_PI;
   const phi   = Math.acos(2*Math.random()-1);
   pPositions[i*3]   = r * Math.sin(phi) * Math.cos(theta);
   pPositions[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
   pPositions[i*3+2] = r * Math.cos(phi);
-  pSpeeds[i*3]   = (Math.random()-.5)*.010;
-  pSpeeds[i*3+1] = (Math.random()-.5)*.010;
-  pSpeeds[i*3+2] = (Math.random()-.5)*.010;
+  pSpeeds[i*3]   = (Math.random()-.5)*.012;
+  pSpeeds[i*3+1] = (Math.random()-.5)*.012;
+  pSpeeds[i*3+2] = (Math.random()-.5)*.012;
   pPhases[i]  = Math.random() * TWO_PI;
   pRadii[i]   = r;
 }
@@ -1276,7 +1329,7 @@ const pGeo = new THREE.BufferGeometry();
 pGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
 const pMat = new THREE.PointsMaterial({
   color: 0xaaaadd,
-  size: 0.05,
+  size: 0.055,
   transparent: true,
   opacity: 0.7,
   sizeAttenuation: true,
@@ -1285,8 +1338,8 @@ const pMat = new THREE.PointsMaterial({
 const points = new THREE.Points(pGeo, pMat);
 pivotGroup.add(points);
 
-// ── 3. Connection lines (∞) ────────────────
-const MAX_LINES = 1200;
+// ── 3. Connection lines (∞ — العلاقات) ───
+const MAX_LINES = 800;
 const linePositions = new Float32Array(MAX_LINES * 6);
 const lineGeo = new THREE.BufferGeometry();
 lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
@@ -1301,7 +1354,7 @@ const lineMat = new THREE.LineSegments(lineGeo,
 );
 pivotGroup.add(lineMat);
 
-// ── 4. Manifested sphere (①) ───────────────
+// ── 4. Manifested sphere (① — التجلي) ───
 const manGeo = new THREE.SphereGeometry(0.55, 32, 32);
 const manMat = new THREE.MeshStandardMaterial({
   color: 0xFF6B6B,
@@ -1316,40 +1369,41 @@ const manMesh = new THREE.Mesh(manGeo, manMat);
 manMesh.position.set(2.8, 0, 0);
 pivotGroup.add(manMesh);
 
-// ── 5. Rings (∞ symbol) ────────────────────
-const torusGeo = new THREE.TorusGeometry(2.3, 0.035, 8, 100);
+// ── 5. Ring (∞ symbol representation) ───
+const torusGeo = new THREE.TorusGeometry(2.2, 0.03, 8, 80);
 const torusMat = new THREE.MeshBasicMaterial({
   color: 0x4ECDC4,
   transparent: true,
-  opacity: 0.2,
+  opacity: 0.18,
 });
 const torusMesh = new THREE.Mesh(torusGeo, torusMat);
 torusMesh.rotation.x = Math.PI * 0.4;
 pivotGroup.add(torusMesh);
 
-const torusGeo2 = new THREE.TorusGeometry(2.1, 0.03, 8, 100);
-const torusMat2 = new THREE.MeshBasicMaterial({ color:0x9C27B0, transparent:true, opacity:0.15 });
+const torusGeo2 = new THREE.TorusGeometry(2.0, 0.025, 8, 80);
+const torusMat2 = new THREE.MeshBasicMaterial({ color:0x9C27B0, transparent:true, opacity:0.12 });
 const torusMesh2 = new THREE.Mesh(torusGeo2, torusMat2);
 torusMesh2.rotation.x = -Math.PI*0.3;
-torusMesh2.rotation.y = Math.PI*0.25;
+torusMesh2.rotation.y = Math.PI*0.2;
 pivotGroup.add(torusMesh2);
 
 // ── Helper: color from tau ─────────────────
 function tauColor(t){
-  const norm = Math.min(1, Math.max(0, t / 10));
+  // t: 0→10, 0=purple, 5=teal, 10=gold/red
+  const norm = t / 10;
   if(norm < 0.5){
     const f = norm * 2;
     return new THREE.Color(
-      0.6*(1-f) + 0.3*f,
-      0.2*(1-f) + 0.8*f,
-      0.7*(1-f) + 0.7*f
+      0.61*(1-f) + 0.30*f,
+      0.16*(1-f) + 0.80*f,
+      0.69*(1-f) + 0.76*f
     );
   } else {
     const f = (norm-0.5)*2;
     return new THREE.Color(
-      0.3*(1-f) + 1.0*f,
-      0.8*(1-f) + 0.4*f,
-      0.7*(1-f) + 0.0*f
+      0.30*(1-f) + 1.0*f,
+      0.80*(1-f) + 0.42*f,
+      0.76*(1-f) + 0.0*f
     );
   }
 }
@@ -1361,14 +1415,13 @@ function stateLabel(){
   return 'تجلّى كاملاً';
 }
 
-// ── Update connections (enhanced) ────────
+// ── Update connections ───────────────────
 const tmpVecA = new THREE.Vector3();
 const tmpVecB = new THREE.Vector3();
 
 function updateConnections(){
   const pos = pGeo.attributes.position.array;
-  let numLines = Math.floor(bs * MAX_LINES * (0.5 + 0.5 * eta));
-  numLines = Math.min(numLines, MAX_LINES);
+  const numLines = Math.floor(bs * MAX_LINES);
   let li = 0;
   const step = Math.max(1, Math.floor(PARTICLE_COUNT / (numLines * 2 + 1)));
   for(let i=0; li < numLines && i < PARTICLE_COUNT-step; i+=step){
@@ -1385,7 +1438,7 @@ function updateConnections(){
   lineGeo.attributes.position.needsUpdate = true;
 }
 
-// ── Animation loop (high quality) ────────
+// ── Animation loop ────────────────────────
 let frameCount = 0;
 function animate(){
   requestAnimationFrame(animate);
@@ -1410,42 +1463,43 @@ function animate(){
   pivotGroup.rotation.y += rotY * 0.02;
   rotY *= 0.92;
 
-  // Core pulse (dependent on BS)
+  // Core pulse
   const pulse = 1 + 0.06 * Math.sin(clock_t * 2.5) * bs;
   coreMesh.scale.setScalar(pulse);
-  glowMesh.scale.setScalar(1 + 0.2 * bs + 0.1 * Math.sin(clock_t*1.8));
+  glowMesh.scale.setScalar(1 + 0.15 * bs + 0.08 * Math.sin(clock_t*1.8));
   coreMat.emissiveIntensity = 0.8 + 0.6 * bs + 0.3 * Math.sin(clock_t*3);
-  glowMat.opacity = 0.05 + 0.12 * bs;
+  glowMat.opacity = 0.04 + 0.1 * bs;
 
-  // Dynamic lights
-  lightGold.position.x = 2 * Math.sin(clock_t * 0.7);
-  lightGold.position.z = 2 * Math.cos(clock_t * 0.7);
-  lightGold.intensity = 2 + 2 * bs;
-  lightTeal.position.x = -2.5 * Math.cos(clock_t * 0.4);
-  lightTeal.position.z = -1.5 * Math.sin(clock_t * 0.5);
-  lightTeal.intensity = 1 + eta * 2.5;
-  lightPurple.position.x = 1.8 * Math.sin(clock_t * 0.6);
-  lightPurple.position.y = 1.2 * Math.cos(clock_t * 0.8);
-  lightPurple.intensity = 1.2 + 1.2 * eta;
+  // Lights
+  pointLight1.position.set(
+    2 * Math.sin(clock_t * 0.7),
+    1.5 * Math.cos(clock_t * 0.5),
+    2 * Math.cos(clock_t * 0.7)
+  );
+  pointLight1.intensity = 2 + 2 * bs;
+  pointLight2.position.set(
+    -2.5 * Math.cos(clock_t * 0.4),
+    1.8 * Math.sin(clock_t * 0.6),
+    -1.5
+  );
+  pointLight2.intensity = 1 + eta * 2;
 
-  // Tau color application
+  // Tau color
   const tc = tauColor(tau);
   pMat.color = tc;
-  lineMat.material.color = tc.clone().lerp(new THREE.Color(0x4ECDC4), 0.4);
-  lightGold.color.setHSL(0.12 + 0.02 * tau, 1, 0.5);
-  lightTeal.color.setHSL(0.5 + 0.03 * tau, 1, 0.6);
+  lineMat.material.color = tc.clone().lerp(new THREE.Color(0x4ECDC4), 0.5);
 
-  // Particle update (radial collapse, explosion, brownian)
+  // Particle update
   const pos = pGeo.attributes.position.array;
-  const collapseRadius = 0.9 + (1 - eta) * 3.5;
+  const collapseRadius = 0.9 + (1 - eta) * 3.2;
   const expandFactor   = 1 - eta;
-  const noiseMag = (1 - bs) * 0.045;
-  const expMag = explodePower * 0.35;
+  const noiseMag = (1 - bs) * 0.04;
+  const expMag = explodePower * 0.3;
 
   for(let i=0; i<PARTICLE_COUNT; i++){
     const ix = i*3, iy = i*3+1, iz = i*3+2;
 
-    // Brownian motion
+    // Brownian noise
     pos[ix] += pSpeeds[ix] + noiseMag*(Math.random()-.5);
     pos[iy] += pSpeeds[iy] + noiseMag*(Math.random()-.5);
     pos[iz] += pSpeeds[iz] + noiseMag*(Math.random()-.5);
@@ -1453,49 +1507,49 @@ function animate(){
     // Radial drift toward collapse radius
     const dx = pos[ix], dy = pos[iy], dz = pos[iz];
     const r = Math.sqrt(dx*dx+dy*dy+dz*dz) || 0.001;
-    const pull = (r - collapseRadius) * 0.02 * eta;
+    const pull = (r - collapseRadius) * 0.015 * eta;
     pos[ix] -= (dx/r) * pull;
     pos[iy] -= (dy/r) * pull;
     pos[iz] -= (dz/r) * pull;
 
-    // Explosion
+    // Explode
     if(expMag > 0){
       pos[ix] += (dx/r) * expMag;
       pos[iy] += (dy/r) * expMag;
       pos[iz] += (dz/r) * expMag;
     }
 
-    // Orbital drift
-    const phBase = clock_t * 0.12 + pPhases[i];
-    pos[ix] += Math.cos(phBase) * 0.0035 * expandFactor;
-    pos[iy] += Math.sin(phBase * 1.2) * 0.0035 * expandFactor;
+    // Orbital drift (phase)
+    const phBase = clock_t * 0.15 + pPhases[i];
+    pos[ix] += Math.cos(phBase) * 0.003 * expandFactor;
+    pos[iy] += Math.sin(phBase * 1.3) * 0.003 * expandFactor;
 
-    // Boundary clamping
+    // Boundary clamp
     const rNew = Math.sqrt(pos[ix]**2+pos[iy]**2+pos[iz]**2);
-    if(rNew > 6.5){ pos[ix]*=6/rNew; pos[iy]*=6/rNew; pos[iz]*=6/rNew; }
+    if(rNew > 6){ pos[ix]*=5.5/rNew; pos[iy]*=5.5/rNew; pos[iz]*=5.5/rNew; }
     if(rNew < 0.9){ pos[ix]*=1.2/rNew; pos[iy]*=1.2/rNew; pos[iz]*=1.2/rNew; }
   }
   pGeo.attributes.position.needsUpdate = true;
-  pMat.opacity = 0.45 + 0.35 * (1 - eta) + 0.2 * bs;
+  pMat.opacity = 0.4 + 0.4 * (1 - eta) + 0.15 * bs;
 
-  // Update connections periodically
+  // Update connections every 3 frames
   if(frameCount % 3 === 0) updateConnections();
-  lineMat.material.opacity = 0.1 + 0.5 * bs * eta;
+  lineMat.material.opacity = 0.12 + 0.45 * bs * eta;
 
-  // Manifested sphere (①)
-  const manV = Math.max(0, (eta - 0.65) / 0.35);
+  // Manifested sphere
+  const manV = Math.max(0, (eta - 0.7) / 0.3);
   manMat.opacity = manV;
-  manMat.emissiveIntensity = manV * (1.8 + 0.5 * Math.sin(clock_t*5));
-  manMesh.scale.setScalar(0.5 + manV * 0.9 + explodePower * 0.3);
-  manMesh.position.x = 2.4 + (1-eta)*0.6;
+  manMat.emissiveIntensity = manV * (1.5 + 0.5 * Math.sin(clock_t*4));
+  manMesh.scale.setScalar(0.5 + manV * 0.8 + explodePower * 0.3);
+  manMesh.position.x = 2.2 + (1-eta)*0.8;
 
-  // Rings rotation
-  torusMesh.rotation.z  += 0.007 * eta;
-  torusMesh2.rotation.y += 0.005 * bs;
-  torusMat.opacity  = 0.1 + 0.25 * bs;
-  torusMat2.opacity = 0.08 + 0.2 * eta;
+  // Rings
+  torusMesh.rotation.z  += 0.006 * eta;
+  torusMesh2.rotation.y += 0.004 * bs;
+  torusMat.opacity  = 0.08 + 0.2 * bs;
+  torusMat2.opacity = 0.06 + 0.15 * eta;
 
-  // HUD update
+  // HUD
   document.getElementById('h-eta').textContent   = eta.toFixed(2);
   document.getElementById('h-bs').textContent    = bs.toFixed(2);
   document.getElementById('h-tau').textContent   = tau.toFixed(2);
@@ -1580,7 +1634,7 @@ document.getElementById('btn-explode').addEventListener('click', ()=>{
 })();
 </script>
 
-<!-- ══ MERMAID INIT (Enhanced) ══ -->
+<!-- ══ MERMAID INIT ══ -->
 <script>
 mermaid.initialize({
   startOnLoad: true,
@@ -1599,7 +1653,6 @@ mermaid.initialize({
     nodeTextColor: '#ffffff',
   },
   flowchart: { curve: 'basis', htmlLabels: true },
-  sequence: { useMaxWidth: true, diagramMarginX: 50, diagramMarginY: 10 },
   fontFamily: 'Tajawal, sans-serif',
 });
 </script>
