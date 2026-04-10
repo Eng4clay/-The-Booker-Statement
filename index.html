@@ -9,14 +9,36 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- MathJax 3 — إعداد موثوق مع دعم كامل للعربية -->
 <script>
 window.MathJax = {
-  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']], tags: 'ams' },
-  options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] },
-  startup: { ready() { MathJax.startup.defaultReady(); } }
+  tex: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    displayMath: [['$$','$$'], ['\\[','\\]']],
+    tags: 'ams',
+    packages: {'[+]': ['base','ams','newcommand']}
+  },
+  svg: { fontCache: 'global', scale: 1.1 },
+  options: {
+    skipHtmlTags: ['script','noscript','style','textarea','pre','code'],
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  },
+  startup: {
+    pageReady(){
+      return MathJax.startup.defaultPageReady().then(()=>{
+        // بعد التهيئة — اعد رسم كل المعادلات المرئية
+        document.querySelectorAll('.math-block').forEach(el=>{
+          el.classList.add('tex2jax_process');
+        });
+      });
+    }
+  }
 };
 </script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<!-- نستخدم tex-svg بدلاً من tex-chtml لموثوقية أعلى -->
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async id="MathJax-script"></script>
 
 <style>
 /* ── FONT IMPORTS ── */
@@ -2903,12 +2925,18 @@ setTimeout(()=>{ document.getElementById('loading-screen').classList.add('hidden
 
 // ══════════════════════════════════════════
 // مساعد عام: إنشاء renderer بسيط لكانفاس صغير
+// يتعامل مع الكانفاس المخفي (clientWidth=0) باستخدام offsetWidth
 // ══════════════════════════════════════════
 function makeSmallRenderer(canvas, w, h, bgColor){
-  const r = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
-  r.setPixelRatio(Math.min(window.devicePixelRatio,1.5));
-  r.setClearColor(bgColor||0x060610, 1);
-  r.setSize(w||canvas.clientWidth||300, h||canvas.clientHeight||300, false);
+  // استخدم offsetWidth عند clientWidth=0 (الكانفاس في تبويب مخفي)
+  const actualW = w || canvas.offsetWidth || canvas.parentElement?.offsetWidth || 400;
+  const actualH = h || 200;
+  canvas.width  = actualW;
+  canvas.height = actualH;
+  const r = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, preserveDrawingBuffer:true });
+  r.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  r.setClearColor(bgColor || 0x060610, 1);
+  r.setSize(actualW, actualH, false);
   return r;
 }
 
@@ -3131,7 +3159,10 @@ let cmbChart=null, cmbFftDone=false;
 function initCMBLab(){
   // ── Three.js: كرة مع نسيج ضجيج CMB ──
   const canvas3d = document.getElementById('cmb-3d');
-  if(!canvas3d || cmbRenderer) return;
+  if(!canvas3d) return;
+  // إيقاف وتنظيف القديم أولاً (تجنب التكرار)
+  if(cmbRaf){ cancelAnimationFrame(cmbRaf); cmbRaf=null; }
+  if(cmbRenderer){ cmbRenderer.dispose(); cmbRenderer=null; }
 
   // بناء نسيج ضجيج CMB على كانفاس 2D
   const noiseCanvas = document.createElement('canvas');
@@ -3141,15 +3172,16 @@ function initCMBLab(){
   for(let i=0;i<256*256*4;i+=4){
     const v = Math.floor(Math.random()*80 + 100);
     const hue = Math.floor(Math.random()*60 - 30);
-    imgData.data[i]   = Math.min(255,v+hue);      // R
-    imgData.data[i+1] = Math.min(255,v-20);       // G
-    imgData.data[i+2] = Math.min(255,v+hue*2);    // B
+    imgData.data[i]   = Math.min(255,v+hue);
+    imgData.data[i+1] = Math.min(255,v-20);
+    imgData.data[i+2] = Math.min(255,v+hue*2);
     imgData.data[i+3] = 255;
   }
   nc.putImageData(imgData,0,0);
   const cmbTexture = new THREE.CanvasTexture(noiseCanvas);
 
-  const w = canvas3d.clientWidth||300, h=160;
+  // استخدم offsetParent لحساب العرض الحقيقي
+  const w = canvas3d.offsetWidth || canvas3d.parentElement?.offsetWidth || 400, h=150;
   cmbRenderer = makeSmallRenderer(canvas3d, w, h, 0x060610);
   cmbScene = new THREE.Scene();
   cmbCamera = new THREE.PerspectiveCamera(50, w/h, 0.1, 100);
@@ -3226,9 +3258,11 @@ let casRaf=null, casRenderer=null, casScene=null, casCamera=null;
 
 function initCasimirLab(){
   const canvas3d = document.getElementById('casimir-3d');
-  if(!canvas3d||casRenderer) return;
+  if(!canvas3d) return;
+  if(casRaf){ cancelAnimationFrame(casRaf); casRaf=null; }
+  if(casRenderer){ casRenderer.dispose(); casRenderer=null; }
 
-  const w=canvas3d.clientWidth||300, h=160;
+  const w = canvas3d.offsetWidth || canvas3d.parentElement?.offsetWidth || 400, h=150;
   casRenderer = makeSmallRenderer(canvas3d, w, h, 0x060610);
   casScene = new THREE.Scene();
   casCamera = new THREE.PerspectiveCamera(50, w/h, 0.1, 100);
@@ -3835,39 +3869,70 @@ window.__tabSceneManager = {
 })(); // نهاية IIFE مختبرات التبويبات
 </script>
 
-<!-- ══ TABS JS ══ -->
+<!-- ══ TABS JS — إصلاح شامل ══ -->
 <script>
 (function(){
+  'use strict';
+
+  // دالة مساعدة لإعادة رسم المعادلات بشكل موثوق
+  function retypeset(pane){
+    if(!pane) return;
+    // انتظر انتهاء العرض قبل الرسم
+    requestAnimationFrame(()=>{
+      if(window.MathJax && MathJax.typesetPromise){
+        MathJax.typesetPromise([pane]).catch(err => console.warn('MathJax:', err));
+      } else if(window.MathJax && MathJax.typeset){
+        try { MathJax.typeset([pane]); } catch(e){}
+      }
+    });
+  }
+
+  // خريطة تهيئة المشاهد لكل تبويب
+  // نستخدم setTimeout لضمان أن الكانفاس مرئي وله أبعاد حقيقية
+  const SCENE_INITS = {
+    eqs:              ()=>{ if(window.setupCBSlider) setupCBSlider(); if(window.initCBScene) initCBScene(); if(window.initZetaChart) initZetaChart(); },
+    pred:             ()=>{ if(window.initPredLabs) initPredLabs(); },
+    exercises:        ()=>{ if(window.initExerciseScene) initExerciseScene(); },
+    'boker-constant': ()=>{ if(window.initBCQuantumScene) initBCQuantumScene(); if(window.initCatScene) initCatScene(); if(window.initDarkEnergyChart) initDarkEnergyChart(); },
+    protocols:        ()=>{ if(window.initSensitivityChart) initSensitivityChart(); },
+  };
+
   const btns  = document.querySelectorAll('.tab-btn');
   const panes = document.querySelectorAll('.tab-pane');
+
   btns.forEach(btn => {
     btn.addEventListener('click', ()=>{
-      // أوقف جميع مشاهد Three.js قبل التبديل (منع إهدار الموارد)
-      if(window.__tabSceneManager) stopAllTabScenes();
+      // 1. أوقف كل المشاهد النشطة
+      if(window.stopAllTabScenes) stopAllTabScenes();
 
-      btns.forEach(b=>b.classList.remove('active'));
-      panes.forEach(p=>p.classList.remove('active'));
+      // 2. أظهر التبويب الجديد
+      btns.forEach(b => b.classList.remove('active'));
+      panes.forEach(p => p.classList.remove('active'));
       btn.classList.add('active');
-      const id = 'tab-' + btn.dataset.tab;
-      const pane = document.getElementById(id);
-      if(pane){
-        pane.classList.add('active');
-        if(window.MathJax) MathJax.typesetPromise([pane]).catch(()=>{});
-        // تشغيل مشهد التبويب الجديد
-        if(window.__tabSceneManager && window.__tabSceneManager[btn.dataset.tab]){
-          setTimeout(()=>{ window.__tabSceneManager[btn.dataset.tab](); }, 80);
-        }
-        // Init sensitivity chart if needed
-        if(btn.dataset.tab === 'protocols') initSensitivityChart();
+
+      const tabName = btn.dataset.tab;
+      const pane = document.getElementById('tab-' + tabName);
+      if(!pane) return;
+      pane.classList.add('active');
+
+      // 3. أعد رسم المعادلات بعد ظهور التبويب
+      retypeset(pane);
+
+      // 4. شغّل المشهد بعد أن يصبح الكانفاس مرئياً (150ms كافية)
+      if(SCENE_INITS[tabName]){
+        setTimeout(()=>{
+          try { SCENE_INITS[tabName](); } catch(e){ console.error('Scene init error:', e); }
+        }, 150);
       }
     });
   });
 
-  // وظيفة إيقاف عالمية مُصدَّرة للـ IIFE
-  window.stopAllTabScenes = function(){
-    ['stopCBScene','stopCMBLab','stopCasimirLab','stopDarkMatterLab','stopNeutrinoLab','stopExerciseScene','stopBCQuantumScene','stopCatScene']
-    .forEach(fn=>{ try{ if(typeof window[fn]==='function') window[fn](); } catch(e){} });
-  };
+  // إعادة رسم معادلات التبويب النشط عند تحميل الصفحة
+  window.addEventListener('load', ()=>{
+    const activePane = document.querySelector('.tab-pane.active');
+    if(activePane) setTimeout(()=> retypeset(activePane), 500);
+  });
+
 })();
 </script>
 
@@ -4469,18 +4534,34 @@ document.addEventListener('click', e=>{
   }
 });
 
-// تهيئة محلل الطيف عند فتح تبويب التنبؤات
-const _origTabManager = window.__tabSceneManager || {};
-window.__tabSceneManager = Object.assign(_origTabManager, {
-  pred: ()=>{
-    if(_origTabManager.pred) _origTabManager.pred();
-    setTimeout(initSpectrumAnalyzer, 200);
-  }
-});
+// ════════════════════════════════════════
+// initPredLabs — دالة موحدة تشغيل مختبرات التنبؤات
+// تُستدعى من TABS JS عبر window.initPredLabs
+// تضمن صحة أبعاد الكانفاس قبل إنشاء Three.js renderer
+// ════════════════════════════════════════
+window.initPredLabs = function(){
+  // تأخير إضافي 100ms لضمان أن الكانفاسات لها clientWidth حقيقي
+  setTimeout(()=>{
+    if(window.initCMBLab)       { initCMBLab(); }
+    if(window.initCasimirLab)   { initCasimirLab(); }
+    if(window.initDarkMatterLab){ initDarkMatterLab(); }
+    if(window.initNeutrinoLab)  { initNeutrinoLab(); }
+    if(window.initSpectrumAnalyzer){ initSpectrumAnalyzer(); }
+  }, 100);
+};
 
-// عرض toast عند تحميل الصفحة
+// ════════════════════════════════════════
+// stopAllTabScenes — وظيفة إيقاف عالمية
+// ════════════════════════════════════════
+window.stopAllTabScenes = function(){
+  const stops = ['stopCBScene','stopCMBLab','stopCasimirLab','stopDarkMatterLab',
+                 'stopNeutrinoLab','stopExerciseScene','stopBCQuantumScene','stopCatScene'];
+  stops.forEach(fn=>{ try{ if(typeof window[fn]==='function') window[fn](); }catch(e){} });
+};
+
+// عرض toast ترحيبي
 window.addEventListener('load', ()=>{
-  setTimeout(()=> showToast('💡 اضغط على الأقراص الدائرية وادرجها للتحكم في المعاملات', 'info', 5000), 2500);
+  setTimeout(()=> showToast('💡 اضغط على الأقراص الدائرية وادرجها للتحكم في المعاملات', 'info', 5000), 3000);
 });
 </script>
 <script>
