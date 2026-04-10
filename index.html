@@ -2,7 +2,19 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="فرضية البيان البوكري — نظام 𝕊 الثالوث الرياضي: تأصيل فلسفي-طبيعي للوجود والتغير واللانهاية. محاكاة ثلاثية الأبعاد تفاعلية، معادلات رياضية، وتنبؤات قابلة للاختبار.">
+<meta name="author" content="م. أحمد علي بوكر نسيب">
+<meta name="theme-color" content="#060610">
+<!-- Open Graph -->
+<meta property="og:title" content="فرضية البيان البوكري — نظام 𝕊 الثالوث الرياضي">
+<meta property="og:description" content="تأصيل فلسفي-طبيعي للوجود والتغير واللانهاية — محاكاة 3D تفاعلية، ثابت بوكر، تنبؤات CMB.">
+<meta property="og:type" content="article">
+<!-- Performance: DNS prefetch & preconnect -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <title>فرضية البيان البوكري – نظام 𝕊 الثالوث الرياضي</title>
 
 <!-- External Libraries -->
@@ -823,6 +835,283 @@ input[type=range]::-webkit-slider-thumb {
 .glow-teal   { text-shadow: 0 0 16px rgba(78,205,196,.5); }
 
 /* ══════════════════════════════════════════
+   ACCESSIBILITY — focus styles
+══════════════════════════════════════════ */
+:focus-visible {
+  outline: 2px solid var(--clr-teal);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+/* Skip-to-content link */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  background: var(--clr-teal);
+  color: var(--clr-bg);
+  padding: .5rem 1rem;
+  border-radius: 0 0 8px 8px;
+  font-weight: bold;
+  font-size: .85rem;
+  z-index: 10000;
+  transition: top .2s;
+  text-decoration: none;
+}
+.skip-link:focus { top: 0; }
+
+/* ══════════════════════════════════════════
+   SCROLL PROGRESS BAR
+   يظهر أعلى الصفحة — يعكس مدى التقدم في القراءة
+══════════════════════════════════════════ */
+#scroll-progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  width: 0%;
+  z-index: 10001;
+  background: linear-gradient(90deg, var(--clr-purple), var(--clr-teal), var(--clr-gold));
+  border-radius: 0 2px 2px 0;
+  transition: width .1s linear;
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════════
+   COPY EQUATION BUTTON
+   يظهر عند التمرير فوق أي math-block
+══════════════════════════════════════════ */
+.math-block {
+  position: relative;
+}
+.math-block .copy-eq-btn {
+  position: absolute;
+  top: 6px; left: 6px;
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--clr-border2);
+  background: rgba(13,13,30,.9);
+  color: var(--clr-muted);
+  font-size: .7rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  transition: opacity .2s, color .2s, border-color .2s, transform .15s;
+  z-index: 5;
+}
+.math-block:hover .copy-eq-btn { opacity: 1; }
+.math-block .copy-eq-btn:hover {
+  color: var(--clr-teal);
+  border-color: var(--clr-teal);
+  transform: scale(1.1);
+}
+.math-block .copy-eq-btn.copied {
+  color: var(--clr-gold);
+  border-color: var(--clr-gold);
+}
+
+/* ══════════════════════════════════════════
+   KEYBOARD SHORTCUTS MODAL
+══════════════════════════════════════════ */
+#kbd-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 8500;
+  background: rgba(4,4,14,.88);
+  backdrop-filter: blur(12px);
+  align-items: center;
+  justify-content: center;
+}
+#kbd-modal.open { display: flex; }
+#kbd-modal-inner {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border2);
+  border-radius: 16px;
+  padding: 1.75rem 2rem;
+  width: min(520px, 95vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0 60px rgba(78,205,196,.12);
+}
+#kbd-modal-inner h2 {
+  font-family: var(--font-display);
+  color: var(--clr-gold);
+  margin-bottom: 1.25rem;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+.kbd-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .5rem .9rem;
+  align-items: center;
+}
+.kbd-key {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  flex-wrap: nowrap;
+}
+.kbd-key kbd {
+  background: rgba(255,255,255,.08);
+  border: 1px solid var(--clr-border2);
+  border-bottom: 2px solid var(--clr-border2);
+  border-radius: 5px;
+  padding: .18rem .45rem;
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  color: var(--clr-teal);
+  white-space: nowrap;
+}
+.kbd-desc { font-size: .82rem; color: var(--clr-muted); }
+.kbd-section {
+  grid-column: 1/-1;
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--clr-purple2);
+  margin-top: .6rem;
+  margin-bottom: .15rem;
+  opacity: .8;
+}
+#kbd-modal-close-btn {
+  margin-top: 1.2rem;
+  width: 100%;
+  padding: .55rem;
+  background: rgba(78,205,196,.08);
+  border: 1px solid var(--clr-teal);
+  border-radius: 8px;
+  color: var(--clr-teal);
+  font-family: var(--font-body);
+  font-size: .85rem;
+  cursor: pointer;
+  transition: background .2s;
+}
+#kbd-modal-close-btn:hover { background: rgba(78,205,196,.18); }
+
+/* Keyboard hint in header */
+#kbd-hint-btn {
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--clr-border);
+  border-radius: 6px;
+  padding: .25rem .55rem;
+  color: var(--clr-muted);
+  font-size: .72rem;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  transition: all .18s;
+  white-space: nowrap;
+}
+#kbd-hint-btn:hover { color: var(--clr-teal); border-color: var(--clr-teal); }
+
+/* ══════════════════════════════════════════
+   MICRO-INTERACTIONS & POLISH
+══════════════════════════════════════════ */
+/* Tab button smooth underline indicator */
+.tab-btn { position: relative; }
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 2px;
+  background: var(--clr-teal);
+  border-radius: 1px 1px 0 0;
+}
+
+/* Smooth appear animation for tab panes */
+.tab-pane.active {
+  animation: paneIn .25s ease;
+}
+@keyframes paneIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Callout entrance animation on scroll */
+.callout {
+  animation: calloutIn .4s ease both;
+}
+@keyframes calloutIn {
+  from { opacity: 0; transform: translateX(8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Enhanced button press feel */
+.btn:active, .preset-btn:active, .lab-tb-btn:active {
+  transform: scale(0.97);
+}
+
+/* Smooth hyp-scroll scrollbar */
+.hyp-scroll { scroll-behavior: smooth; }
+
+/* Table row hover transition */
+.hyp-scroll tr { transition: background .15s; }
+
+/* ══════════════════════════════════════════
+   READING PROGRESS inside hyp-scroll
+══════════════════════════════════════════ */
+.hyp-scroll-wrap { position: relative; }
+.hyp-scroll-progress {
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px;
+  height: 0%;
+  background: linear-gradient(180deg, var(--clr-teal), var(--clr-purple));
+  border-radius: 2px;
+  transition: height .08s linear;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — mobile fixes
+══════════════════════════════════════════ */
+@media (max-width: 600px) {
+  #site-header nav { display: none; }
+  #sim-section { padding: 1rem; }
+  #content-section { padding: .75rem 1rem; }
+  .hyp-scroll { height: 480px; }
+  .collab-form { grid-template-columns: 1fr; }
+  .collab-form h3, .form-submit, .form-msg { grid-column: 1; }
+  .form-group.full { grid-column: 1; }
+  #pred-grid { grid-template-columns: 1fr !important; }
+  .knobs-row { gap: .5rem; }
+  .knob-ring { width: 56px; height: 56px; }
+  .knob-inner { width: 38px; height: 38px; }
+  #bouker-gpt-window { width: calc(100vw - 2rem); left: 1rem; }
+  #bouker-gpt-fab { left: 1rem; bottom: 1rem; }
+  /* Stack CB card on mobile */
+  #tab-eqs [style*="grid-template-columns:300px"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ══════════════════════════════════════════
+   PRINT STYLES — للطباعة الأكاديمية
+══════════════════════════════════════════ */
+@media print {
+  #site-header, #loading-screen, #bouker-gpt-fab, #bouker-gpt-window,
+  #kbd-modal, #lab-modal, #toast-container, #flash-overlay,
+  .ctrl-btns, .ctrl-row-2, .presets-panel, .knobs-row,
+  #scroll-progress-bar, .copy-eq-btn { display: none !important; }
+
+  body { background: #fff; color: #111; font-size: 11pt; }
+  #main-layout { padding-top: 0; }
+  #hero { background: none; padding: 1rem 0; }
+  #hero h1 { color: #111; text-shadow: none; font-size: 18pt; }
+  .tab-pane { display: block !important; }
+  .tab-pane:not(.active) { page-break-before: always; }
+  .hyp-scroll { height: auto !important; overflow: visible !important; }
+  .math-block { border: 1px solid #ccc; background: #f9f9f9; }
+  #canvas-wrap { display: none; }
+  a { color: #000; text-decoration: underline; }
+  .hyp-scroll h1 { color: #111; border-bottom: 2px solid #333; }
+  .hyp-scroll h2 { color: #222; }
+  .hyp-scroll h3 { color: #333; }
+}
+
+/* ══════════════════════════════════════════
    TOAST NOTIFICATIONS
 ══════════════════════════════════════════ */
 #toast-container {
@@ -1266,13 +1555,19 @@ input[type=range]::-webkit-slider-thumb {
   <div class="loading-text">جاري تحميل نظام التجلي الثالوثي…</div>
 </div>
 
+<!-- Skip to content (a11y) -->
+<a class="skip-link" href="#content-section">انتقل إلى المحتوى الرئيسي</a>
+
+<!-- Scroll Progress Bar -->
+<div id="scroll-progress-bar" role="progressbar" aria-label="مؤشر التقدم في القراءة" aria-valuemin="0" aria-valuemax="100"></div>
+
 <!-- White Flash Overlay -->
-<div id="flash-overlay"></div>
+<div id="flash-overlay" aria-hidden="true"></div>
 
 <!-- ══ HEADER ══ -->
-<header id="site-header">
-  <div class="logo">𝕊 | البيان البوكري</div>
-  <nav>
+<header id="site-header" role="banner">
+  <div class="logo" aria-label="نظام 𝕊 البيان البوكري">𝕊 | البيان البوكري</div>
+  <nav aria-label="التنقل الرئيسي">
     <a href="#sim-section">⚡ المحاكاة</a>
     <a href="#tab-intro">المقدمة</a>
     <a href="#tab-defs">التعريفات</a>
@@ -1280,6 +1575,7 @@ input[type=range]::-webkit-slider-thumb {
     <a href="#tab-pred">التنبؤات</a>
     <a href="#tab-proj">المشاريع</a>
   </nav>
+  <button id="kbd-hint-btn" onclick="document.getElementById('kbd-modal').classList.toggle('open')" title="اختصارات لوحة المفاتيح" aria-label="اختصارات لوحة المفاتيح">⌨ ?</button>
 </header>
 
 <!-- ══ MAIN LAYOUT ══ -->
@@ -1428,21 +1724,21 @@ input[type=range]::-webkit-slider-thumb {
   <!-- CONTENT SECTION -->
   <section id="content-section">
     <div class="tabs-wrap">
-      <div class="tabs" role="tablist">
-        <button class="tab-btn active" data-tab="intro" role="tab">📖 المقدمة</button>
-        <button class="tab-btn" data-tab="defs" role="tab">🔍 التعريفات</button>
-        <button class="tab-btn" data-tab="eqs" role="tab">📐 المعادلات</button>
-        <button class="tab-btn" data-tab="pred" role="tab">🔬 التنبؤات</button>
-        <button class="tab-btn" data-tab="proj" role="tab">💡 المشاريع</button>
-        <button class="tab-btn" data-tab="invest" role="tab">💰 الاستثمار</button>
-        <button class="tab-btn" data-tab="meta" role="tab">🌌 الميتافيزيقا</button>
-        <button class="tab-btn" data-tab="hist" role="tab">📜 التاريخ</button>
-        <button class="tab-btn" data-tab="exercises" role="tab">✏️ تمارين</button>
-        <button class="tab-btn" data-tab="protocols" role="tab">🧪 البروتوكولات</button>
-        <button class="tab-btn" data-tab="collab" role="tab">🤝 التعاون</button>
-        <button class="tab-btn" data-tab="roadmap" role="tab">📈 الخارطة الزمنية</button>
-        <button class="tab-btn" data-tab="faq" role="tab">🧠 الأسئلة الشائعة</button>
-        <button class="tab-btn" data-tab="boker-constant" role="tab">⚛️ ثابت بوكر للتجلي</button>
+      <div class="tabs" role="tablist" aria-label="أقسام الفرضية البوكرية">
+        <button class="tab-btn active" data-tab="intro" role="tab" aria-selected="true" aria-controls="tab-intro">📖 المقدمة</button>
+        <button class="tab-btn" data-tab="defs" role="tab" aria-selected="false" aria-controls="tab-defs">🔍 التعريفات</button>
+        <button class="tab-btn" data-tab="eqs" role="tab" aria-selected="false" aria-controls="tab-eqs">📐 المعادلات</button>
+        <button class="tab-btn" data-tab="pred" role="tab" aria-selected="false" aria-controls="tab-pred">🔬 التنبؤات</button>
+        <button class="tab-btn" data-tab="proj" role="tab" aria-selected="false" aria-controls="tab-proj">💡 المشاريع</button>
+        <button class="tab-btn" data-tab="invest" role="tab" aria-selected="false" aria-controls="tab-invest">💰 الاستثمار</button>
+        <button class="tab-btn" data-tab="meta" role="tab" aria-selected="false" aria-controls="tab-meta">🌌 الميتافيزيقا</button>
+        <button class="tab-btn" data-tab="hist" role="tab" aria-selected="false" aria-controls="tab-hist">📜 التاريخ</button>
+        <button class="tab-btn" data-tab="exercises" role="tab" aria-selected="false" aria-controls="tab-exercises">✏️ تمارين</button>
+        <button class="tab-btn" data-tab="protocols" role="tab" aria-selected="false" aria-controls="tab-protocols">🧪 البروتوكولات</button>
+        <button class="tab-btn" data-tab="collab" role="tab" aria-selected="false" aria-controls="tab-collab">🤝 التعاون</button>
+        <button class="tab-btn" data-tab="roadmap" role="tab" aria-selected="false" aria-controls="tab-roadmap">📈 الخارطة الزمنية</button>
+        <button class="tab-btn" data-tab="faq" role="tab" aria-selected="false" aria-controls="tab-faq">🧠 الأسئلة الشائعة</button>
+        <button class="tab-btn" data-tab="boker-constant" role="tab" aria-selected="false" aria-controls="tab-boker-constant">⚛️ ثابت بوكر للتجلي</button>
       </div>
     </div>
 
@@ -2342,6 +2638,61 @@ $$❶ = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 0 \end{pmatrix},\quad 
   </footer>
 
 </div><!-- end #main-layout -->
+
+<!-- ══ KEYBOARD SHORTCUTS MODAL ══ -->
+<div id="kbd-modal" role="dialog" aria-modal="true" aria-labelledby="kbd-modal-title">
+  <div id="kbd-modal-inner">
+    <h2 id="kbd-modal-title">⌨️ اختصارات لوحة المفاتيح</h2>
+    <div class="kbd-grid">
+      <div class="kbd-section">التنقل</div>
+      <div></div>
+      <div class="kbd-key"><kbd>Tab</kbd></div>
+      <div class="kbd-desc">الانتقال بين العناصر التفاعلية</div>
+      <div class="kbd-key"><kbd>Alt</kbd> + <kbd>1</kbd>–<kbd>9</kbd></div>
+      <div class="kbd-desc">فتح التبويب المقابل مباشرة</div>
+      <div class="kbd-key"><kbd>←</kbd> <kbd>→</kbd></div>
+      <div class="kbd-desc">التنقل بين التبويبات (عند التركيز)</div>
+      <div class="kbd-key"><kbd>Esc</kbd></div>
+      <div class="kbd-desc">إغلاق النوافذ المنبثقة</div>
+
+      <div class="kbd-section">المحاكاة الرئيسية</div>
+      <div></div>
+      <div class="kbd-key"><kbd>Space</kbd></div>
+      <div class="kbd-desc">تشغيل / إيقاف الدورة التلقائية لـ η</div>
+      <div class="kbd-key"><kbd>R</kbd></div>
+      <div class="kbd-desc">إعادة ضبط جميع المعاملات</div>
+      <div class="kbd-key"><kbd>E</kbd></div>
+      <div class="kbd-desc">تجلٍّ مفاجئ (انهيار الدالة الموجية)</div>
+      <div class="kbd-key"><kbd>B</kbd></div>
+      <div class="kbd-desc">تبديل خلفية المشهد</div>
+      <div class="kbd-key"><kbd>X</kbd></div>
+      <div class="kbd-desc">تصدير حالة المعاملات</div>
+
+      <div class="kbd-section">الإعدادات المسبقة</div>
+      <div></div>
+      <div class="kbd-key"><kbd>1</kbd></div>
+      <div class="kbd-desc">الحالة الأرضية</div>
+      <div class="kbd-key"><kbd>2</kbd></div>
+      <div class="kbd-desc">تشابك أقصى (Bell state)</div>
+      <div class="kbd-key"><kbd>3</kbd></div>
+      <div class="kbd-desc">العتبة الحرجة (BS = 𝒞ℬ)</div>
+      <div class="kbd-key"><kbd>4</kbd></div>
+      <div class="kbd-desc">تجلٍّ كامل</div>
+      <div class="kbd-key"><kbd>5</kbd></div>
+      <div class="kbd-desc">إمكانية محضة (0ₚ)</div>
+
+      <div class="kbd-section">عام</div>
+      <div></div>
+      <div class="kbd-key"><kbd>?</kbd></div>
+      <div class="kbd-desc">فتح / إغلاق هذه النافذة</div>
+      <div class="kbd-key"><kbd>G</kbd></div>
+      <div class="kbd-desc">فتح مساعد بوكر-GPT</div>
+      <div class="kbd-key"><kbd>F</kbd></div>
+      <div class="kbd-desc">بدء تحليل فورييه (في تبويب التنبؤات)</div>
+    </div>
+    <button id="kbd-modal-close-btn" onclick="document.getElementById('kbd-modal').classList.remove('open')" aria-label="إغلاق نافذة الاختصارات">✕ إغلاق</button>
+  </div>
+</div>
 
 <!-- ══ TOAST CONTAINER ══ -->
 <div id="toast-container"></div>
@@ -3884,10 +4235,9 @@ window.stopAllTabScenes = function(){
 (function(){
   'use strict';
 
-  // دالة مساعدة لإعادة رسم المعادلات بشكل موثوق
+  /* ─── MathJax retypeset helper ─── */
   function retypeset(pane){
     if(!pane) return;
-    // انتظر انتهاء العرض قبل الرسم
     requestAnimationFrame(()=>{
       if(window.MathJax && MathJax.typesetPromise){
         MathJax.typesetPromise([pane]).catch(err => console.warn('MathJax:', err));
@@ -3897,8 +4247,7 @@ window.stopAllTabScenes = function(){
     });
   }
 
-  // خريطة تهيئة المشاهد لكل تبويب
-  // نستخدم setTimeout لضمان أن الكانفاس مرئي وله أبعاد حقيقية
+  /* ─── Scene init map ─── */
   const SCENE_INITS = {
     eqs:              ()=>{ if(window.setupCBSlider) setupCBSlider(); if(window.initCBScene) initCBScene(); if(window.initZetaChart) initZetaChart(); },
     pred:             ()=>{ if(window.initPredLabs) initPredLabs(); },
@@ -3910,37 +4259,274 @@ window.stopAllTabScenes = function(){
   const btns  = document.querySelectorAll('.tab-btn');
   const panes = document.querySelectorAll('.tab-pane');
 
-  btns.forEach(btn => {
-    btn.addEventListener('click', ()=>{
-      // 1. أوقف كل المشاهد النشطة
-      if(window.stopAllTabScenes) stopAllTabScenes();
+  /* ─── Tab switch ─── */
+  function activateTab(tabName){
+    if(window.stopAllTabScenes) stopAllTabScenes();
 
-      // 2. أظهر التبويب الجديد
-      btns.forEach(b => b.classList.remove('active'));
-      panes.forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-
-      const tabName = btn.dataset.tab;
-      const pane = document.getElementById('tab-' + tabName);
-      if(!pane) return;
-      pane.classList.add('active');
-
-      // 3. أعد رسم المعادلات بعد ظهور التبويب
-      retypeset(pane);
-
-      // 4. شغّل المشهد بعد أن يصبح الكانفاس مرئياً (150ms كافية)
-      if(SCENE_INITS[tabName]){
-        setTimeout(()=>{
-          try { SCENE_INITS[tabName](); } catch(e){ console.error('Scene init error:', e); }
-        }, 150);
-      }
+    btns.forEach(b => {
+      const active = b.dataset.tab === tabName;
+      b.classList.toggle('active', active);
+      b.setAttribute('aria-selected', active ? 'true' : 'false');
     });
+    panes.forEach(p => {
+      const active = p.id === 'tab-' + tabName;
+      p.classList.toggle('active', active);
+      p.setAttribute('aria-hidden', active ? 'false' : 'true');
+    });
+
+    const pane = document.getElementById('tab-' + tabName);
+    if(!pane) return;
+    retypeset(pane);
+
+    if(SCENE_INITS[tabName]){
+      setTimeout(()=>{
+        try { SCENE_INITS[tabName](); } catch(e){ console.error('Scene init error:', e); }
+      }, 150);
+    }
+
+    // Scroll tab button into view (mobile)
+    const activeBtn = document.querySelector('.tab-btn.active');
+    if(activeBtn) activeBtn.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+  }
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', ()=> activateTab(btn.dataset.tab));
   });
 
-  // إعادة رسم معادلات التبويب النشط عند تحميل الصفحة
+  /* ─── Arrow key navigation in tab list ─── */
+  document.querySelector('.tabs')?.addEventListener('keydown', e=>{
+    if(!['ArrowLeft','ArrowRight'].includes(e.key)) return;
+    const list = [...btns];
+    const cur  = list.findIndex(b => b === document.activeElement);
+    if(cur < 0) return;
+    const next = e.key === 'ArrowRight'
+      ? list[(cur - 1 + list.length) % list.length]
+      : list[(cur + 1) % list.length];
+    next.focus();
+    activateTab(next.dataset.tab);
+    e.preventDefault();
+  });
+
+  /* ─── Init aria-hidden on inactive panes ─── */
+  panes.forEach(p => { if(!p.classList.contains('active')) p.setAttribute('aria-hidden','true'); });
+
+  /* ─── MathJax: retypeset active pane on load ─── */
   window.addEventListener('load', ()=>{
     const activePane = document.querySelector('.tab-pane.active');
-    if(activePane) setTimeout(()=> retypeset(activePane), 500);
+    if(activePane) setTimeout(()=> retypeset(activePane), 600);
+    // Also re-typeset all panes once MathJax is fully ready (for initial load)
+    if(window.MathJax){
+      setTimeout(()=>{
+        MathJax.typesetPromise && MathJax.typesetPromise(document.querySelectorAll('.math-block')).catch(()=>{});
+      }, 1800);
+    }
+  });
+
+  /* ─── Expose activateTab globally ─── */
+  window.activateTab = activateTab;
+
+})();
+</script>
+
+<!-- ══ SCROLL PROGRESS BAR ══ -->
+<script>
+(function(){
+  'use strict';
+  const bar = document.getElementById('scroll-progress-bar');
+  if(!bar) return;
+
+  function updateProgress(){
+    const scrollTop  = window.scrollY || document.documentElement.scrollTop;
+    const docHeight  = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? Math.min(100, (scrollTop / docHeight) * 100) : 0;
+    bar.style.width = pct + '%';
+    bar.setAttribute('aria-valuenow', Math.round(pct));
+  }
+
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+})();
+</script>
+
+<!-- ══ COPY EQUATION BUTTON ══ -->
+<script>
+(function(){
+  'use strict';
+
+  /* Add copy button to every math-block */
+  function addCopyButtons(){
+    document.querySelectorAll('.math-block').forEach(block => {
+      if(block.querySelector('.copy-eq-btn')) return; // already added
+      const btn = document.createElement('button');
+      btn.className = 'copy-eq-btn';
+      btn.title = 'نسخ المعادلة';
+      btn.setAttribute('aria-label', 'نسخ المعادلة');
+      btn.innerHTML = '⎘';
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        // Get raw LaTeX from the block's text (strip MathJax output spans)
+        const rawText = block.textContent.trim().replace(/\s+/g,' ');
+        const latexSource = block.getAttribute('data-latex') || rawText;
+
+        navigator.clipboard?.writeText(latexSource).then(()=>{
+          btn.innerHTML = '✓';
+          btn.classList.add('copied');
+          if(window.showToast) showToast('📋 تم نسخ المعادلة', 'success', 1800);
+          setTimeout(()=>{ btn.innerHTML='⎘'; btn.classList.remove('copied'); }, 2000);
+        }).catch(()=>{
+          if(window.showToast) showToast('تعذّر النسخ — افتح Console', 'error', 2000);
+        });
+      });
+      block.appendChild(btn);
+    });
+  }
+
+  // Run after DOM + MathJax (use MutationObserver for dynamically added blocks)
+  const observer = new MutationObserver(addCopyButtons);
+  document.addEventListener('DOMContentLoaded', ()=>{
+    addCopyButtons();
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
+  window.addEventListener('load', addCopyButtons);
+})();
+</script>
+
+<!-- ══ READING PROGRESS in hyp-scroll ══ -->
+<script>
+(function(){
+  'use strict';
+
+  function attachReadingProgress(scrollEl){
+    if(!scrollEl || scrollEl._progressAttached) return;
+    scrollEl._progressAttached = true;
+
+    // Wrap if needed
+    const parent = scrollEl.parentElement;
+    if(!parent.classList.contains('hyp-scroll-wrap')){
+      const wrap = document.createElement('div');
+      wrap.className = 'hyp-scroll-wrap';
+      parent.insertBefore(wrap, scrollEl);
+      wrap.appendChild(scrollEl);
+    }
+
+    const prog = document.createElement('div');
+    prog.className = 'hyp-scroll-progress';
+    prog.setAttribute('aria-hidden', 'true');
+    scrollEl.parentElement.appendChild(prog);
+
+    scrollEl.addEventListener('scroll', ()=>{
+      const max = scrollEl.scrollHeight - scrollEl.clientHeight;
+      const pct = max > 0 ? (scrollEl.scrollTop / max) * 100 : 0;
+      prog.style.height = pct + '%';
+    }, { passive: true });
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    document.querySelectorAll('.hyp-scroll').forEach(attachReadingProgress);
+  });
+})();
+</script>
+
+<!-- ══ KEYBOARD SHORTCUTS ENGINE ══ -->
+<script>
+(function(){
+  'use strict';
+
+  const PRESET_KEYS = { '1':'ground', '2':'entangle', '3':'threshold', '4':'manifest', '5':'zero' };
+  const TAB_KEYS = {
+    'F1':'intro','F2':'defs','F3':'eqs','F4':'pred','F5':'proj',
+    'F6':'invest','F7':'meta','F8':'hist','F9':'exercises'
+  };
+
+  document.addEventListener('keydown', e => {
+    // Ignore if typing in input/textarea
+    const tag = document.activeElement?.tagName;
+    if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+    const key = e.key;
+    const kbdModal  = document.getElementById('kbd-modal');
+    const gptWindow = document.getElementById('bouker-gpt-window');
+
+    /* Close modals with Escape */
+    if(key === 'Escape'){
+      kbdModal?.classList.remove('open');
+      document.getElementById('lab-modal')?.classList.remove('open');
+      gptWindow?.classList.remove('open');
+      return;
+    }
+
+    /* ? — toggle keyboard help */
+    if(key === '?' || key === '؟'){
+      kbdModal?.classList.toggle('open');
+      return;
+    }
+
+    /* G — toggle GPT */
+    if(key === 'g' || key === 'G'){
+      if(window.toggleGPT) toggleGPT();
+      return;
+    }
+
+    /* Space — cycle toggle */
+    if(key === ' '){
+      document.getElementById('btn-cycle')?.click();
+      e.preventDefault();
+      return;
+    }
+
+    /* R — reset */
+    if(key === 'r' || key === 'R'){
+      document.getElementById('btn-reset')?.click();
+      return;
+    }
+
+    /* E — explode */
+    if(key === 'e' || key === 'E'){
+      document.getElementById('btn-explode')?.click();
+      return;
+    }
+
+    /* B — background */
+    if(key === 'b' || key === 'B'){
+      document.getElementById('btn-bg')?.click();
+      return;
+    }
+
+    /* X — export */
+    if(key === 'x' || key === 'X'){
+      document.getElementById('btn-export')?.click();
+      return;
+    }
+
+    /* F — FFT analysis */
+    if(key === 'f' || key === 'F'){
+      document.getElementById('cmb-fft-btn')?.click();
+      return;
+    }
+
+    /* Alt + number → tab */
+    if(e.altKey && !isNaN(parseInt(key))){
+      const tabNames = ['intro','defs','eqs','pred','proj','invest','meta','hist','exercises'];
+      const idx = parseInt(key) - 1;
+      if(idx >= 0 && idx < tabNames.length && window.activateTab){
+        activateTab(tabNames[idx]);
+        e.preventDefault();
+      }
+      return;
+    }
+
+    /* 1-5 (no modifier) → presets */
+    if(PRESET_KEYS[key] && !e.altKey && !e.ctrlKey && !e.metaKey){
+      if(window.tweenToPreset) tweenToPreset(PRESET_KEYS[key]);
+      return;
+    }
+  });
+
+  /* Click outside kbd modal to close */
+  document.getElementById('kbd-modal')?.addEventListener('click', e=>{
+    if(e.target === document.getElementById('kbd-modal')){
+      document.getElementById('kbd-modal').classList.remove('open');
+    }
   });
 
 })();
