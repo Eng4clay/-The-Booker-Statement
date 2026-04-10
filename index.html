@@ -2916,27 +2916,22 @@ setTimeout(()=>{ document.getElementById('loading-screen').classList.add('hidden
 
 <!-- ══════════════════════════════════════════════════════════════
      مختبرات التبويبات التفاعلية — Three.js + Chart.js
-     يستخدم نمط إيقاف/تشغيل الرندر عند تبديل التبويبات لتجنب
-     إهدار الموارد (Memory Management)
+     الدوال كلها عالمية (global) لضمان الوصول إليها من أي مكان
 ══════════════════════════════════════════════════════════════ -->
 <script>
-(function(){
-"use strict";
-
-// ══════════════════════════════════════════
-// مساعد عام: إنشاء renderer بسيط لكانفاس صغير
-// يتعامل مع الكانفاس المخفي (clientWidth=0) باستخدام offsetWidth
-// ══════════════════════════════════════════
-function makeSmallRenderer(canvas, w, h, bgColor){
-  // استخدم offsetWidth عند clientWidth=0 (الكانفاس في تبويب مخفي)
-  const actualW = w || canvas.offsetWidth || canvas.parentElement?.offsetWidth || 400;
-  const actualH = h || 200;
-  canvas.width  = actualW;
-  canvas.height = actualH;
+/* ───────────────────────────────────────────────────
+   مساعد عام: إنشاء THREE.WebGLRenderer بأبعاد صحيحة
+   يعمل حتى لو كان الكانفاس في تبويب مخفي (clientWidth=0)
+──────────────────────────────────────────────────── */
+function makeSmallRenderer(canvas, forcedW, forcedH, bgColor){
+  const W = forcedW || canvas.offsetWidth || canvas.parentElement?.offsetWidth || 400;
+  const H = forcedH || canvas.offsetHeight || 200;
+  canvas.width  = W;
+  canvas.height = H;
   const r = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, preserveDrawingBuffer:true });
   r.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-  r.setClearColor(bgColor || 0x060610, 1);
-  r.setSize(actualW, actualH, false);
+  r.setClearColor(bgColor != null ? bgColor : 0x060610, 1);
+  r.setSize(W, H, false);
   return r;
 }
 
@@ -3150,105 +3145,135 @@ function initZetaChart(){
   });
 }
 
-// ══════════════════════════════════════════
-// ── مختبر P1: كرة CMB ثلاثية الأبعاد ──
-// ══════════════════════════════════════════
-let cmbRaf=null, cmbRenderer=null, cmbScene=null, cmbCamera=null;
-let cmbChart=null, cmbFftDone=false;
-
-function initCMBLab(){
-  // ── Three.js: كرة مع نسيج ضجيج CMB ──
-  const canvas3d = document.getElementById('cmb-3d');
-  if(!canvas3d) return;
-  // إيقاف وتنظيف القديم أولاً (تجنب التكرار)
-  if(cmbRaf){ cancelAnimationFrame(cmbRaf); cmbRaf=null; }
-  if(cmbRenderer){ cmbRenderer.dispose(); cmbRenderer=null; }
-
-  // بناء نسيج ضجيج CMB على كانفاس 2D
-  const noiseCanvas = document.createElement('canvas');
-  noiseCanvas.width = noiseCanvas.height = 256;
-  const nc = noiseCanvas.getContext('2d');
-  const imgData = nc.createImageData(256,256);
-  for(let i=0;i<256*256*4;i+=4){
-    const v = Math.floor(Math.random()*80 + 100);
-    const hue = Math.floor(Math.random()*60 - 30);
-    imgData.data[i]   = Math.min(255,v+hue);
-    imgData.data[i+1] = Math.min(255,v-20);
-    imgData.data[i+2] = Math.min(255,v+hue*2);
-    imgData.data[i+3] = 255;
-  }
-  nc.putImageData(imgData,0,0);
-  const cmbTexture = new THREE.CanvasTexture(noiseCanvas);
-
-  // استخدم offsetParent لحساب العرض الحقيقي
-  const w = canvas3d.offsetWidth || canvas3d.parentElement?.offsetWidth || 400, h=150;
-  cmbRenderer = makeSmallRenderer(canvas3d, w, h, 0x060610);
-  cmbScene = new THREE.Scene();
-  cmbCamera = new THREE.PerspectiveCamera(50, w/h, 0.1, 100);
-  cmbCamera.position.set(0,0,3);
-
-  cmbScene.add(new THREE.AmbientLight(0x334466,2));
-  const pl2 = new THREE.PointLight(0x4ECDC4,2,8); pl2.position.set(2,2,2); cmbScene.add(pl2);
-
-  const sphere = new THREE.Mesh(
-    new THREE.SphereGeometry(1,32,32),
-    new THREE.MeshStandardMaterial({ map:cmbTexture, emissive:0x112233, emissiveIntensity:0.3 })
-  );
-  cmbScene.add(sphere);
-
-  let cmbT=0;
-  function loopCMB(){
-    if(!cmbRenderer) return;
-    cmbRaf = requestAnimationFrame(loopCMB);
-    cmbT+=0.008;
-    sphere.rotation.y = cmbT*0.3;
-    sphere.rotation.x = Math.sin(cmbT*0.2)*0.2;
-    cmbRenderer.render(cmbScene,cmbCamera);
-  }
-  loopCMB();
-
-  // ── Chart.js: طيف التردد ──
-  const chartCanvas = document.getElementById('cmb-chart-canvas');
-  if(!chartCanvas) return;
-  const freqLabels = Array.from({length:60},(_,i)=>(i*0.01).toFixed(2));
-  const baseData   = freqLabels.map(f => 0.05 + Math.random()*0.08);
-
-  cmbChart = new Chart(chartCanvas.getContext('2d'),{
-    type:'line',
-    data:{
-      labels:freqLabels,
-      datasets:[{
-        label:'طيف القوة (Hz vs Power)',
-        data: baseData,
-        borderColor:'#4ECDC4',borderWidth:1.2,pointRadius:0,tension:0.4,
-        fill:{target:'origin',above:'rgba(78,205,196,.06)'}
-      }]
-    },
-    options:{
-      responsive:true,animation:{duration:600},
-      plugins:{ legend:{display:false}, title:{display:true,text:'طيف CMB — تردد (Hz)',color:'#4ECDC4',font:{size:10,family:'Tajawal,sans-serif'}} },
-      scales:{ x:{ticks:{color:'#555',font:{size:8},maxTicksLimit:8},grid:{color:'#111'}}, y:{ticks:{color:'#555',font:{size:8}},grid:{color:'#111'}} }
-    }
-  });
-
-  // زر تحليل فورييه: يضيف ذروة عند 0.115 Hz
-  const fftBtn = document.getElementById('cmb-fft-btn');
-  if(fftBtn) fftBtn.addEventListener('click', ()=>{
-    if(cmbFftDone) return;
-    cmbFftDone = true;
-    fftBtn.textContent = '✅ تم اكتشاف ذروة عند 0.115 Hz (>5σ)';
-    fftBtn.style.borderColor='#FFD700'; fftBtn.style.color='#FFD700';
-    // أضف ذروة واضحة عند index 11 (≈0.11-0.12 Hz)
-    const newData = [...baseData];
-    newData[11] = 1.8; newData[12] = 1.4; newData[10]=0.6;
-    cmbChart.data.datasets[0].data = newData;
-    cmbChart.data.datasets[0].borderColor='#FFD700';
-    cmbChart.update();
-  });
-}
+/* ═══════════════════════════════════════════════════
+   مختبر P1: كرة CMB + محلل الطيف الحي (Spectrum FFT)
+   الكود مكتوب بـ var لتجنب أي مشاكل scope
+═══════════════════════════════════════════════════ */
+var cmbRaf=null, cmbRenderer=null, cmbScene=null, cmbCamera=null;
+var spectrumRaf=null, spectrumPeakTarget=0, spectrumPhase=0, spectrumCurrentPeak=0;
+var cmbFftDone=false;
 
 function stopCMBLab(){
   if(cmbRaf){ cancelAnimationFrame(cmbRaf); cmbRaf=null; }
+  if(spectrumRaf){ cancelAnimationFrame(spectrumRaf); spectrumRaf=null; }
+  if(cmbRenderer){ cmbRenderer.dispose(); cmbRenderer=null; }
+}
+
+function initCMBLab(){
+  stopCMBLab(); // نظّف القديم
+
+  /* ── Three.js: كرة CMB ── */
+  var c3 = document.getElementById('cmb-3d');
+  if(!c3) return;
+
+  var nc = document.createElement('canvas');
+  nc.width = nc.height = 256;
+  var nctx = nc.getContext('2d');
+  var id = nctx.createImageData(256,256);
+  for(var k=0;k<256*256*4;k+=4){
+    var v=Math.floor(Math.random()*80+100), hh=Math.floor(Math.random()*60-30);
+    id.data[k]=Math.min(255,v+hh); id.data[k+1]=Math.min(255,v-20);
+    id.data[k+2]=Math.min(255,v+hh*2); id.data[k+3]=255;
+  }
+  nctx.putImageData(id,0,0);
+  var cmbTex = new THREE.CanvasTexture(nc);
+
+  var cW = (c3.parentElement ? c3.parentElement.clientWidth : 0) || 400;
+  cmbRenderer = makeSmallRenderer(c3, cW, 150, 0x060610);
+  cmbScene = new THREE.Scene();
+  cmbCamera = new THREE.PerspectiveCamera(50, cW/150, 0.1, 100);
+  cmbCamera.position.set(0,0,3);
+  cmbScene.add(new THREE.AmbientLight(0x334466,2));
+  var cmbPl = new THREE.PointLight(0x4ECDC4,2,8); cmbPl.position.set(2,2,2); cmbScene.add(cmbPl);
+  var cmbSphere = new THREE.Mesh(
+    new THREE.SphereGeometry(1,32,32),
+    new THREE.MeshStandardMaterial({ map:cmbTex, emissive:0x112233, emissiveIntensity:0.3 })
+  );
+  cmbScene.add(cmbSphere);
+  var cmbT=0;
+  (function loopCMB(){
+    if(!cmbRenderer){ return; }
+    cmbRaf=requestAnimationFrame(loopCMB);
+    if(window._labPaused && window._labPaused.cmb) return;
+    cmbT+=0.008; cmbSphere.rotation.y=cmbT*0.3; cmbSphere.rotation.x=Math.sin(cmbT*0.2)*0.2;
+    cmbRenderer.render(cmbScene,cmbCamera);
+  })();
+
+  /* ── محلل الطيف الحي ── */
+  var sc = document.getElementById('spectrum-canvas');
+  if(!sc) return;
+  cmbFftDone=false; spectrumPeakTarget=0; spectrumPhase=0; spectrumCurrentPeak=0;
+  var BINS=80, TARGET_BIN=Math.round((0.115-0.01)/0.59*BINS);
+  // ضجيج ثابت (نولده مرة)
+  var noiseBase=Array.from({length:BINS},function(){return 0.05+Math.random()*0.12;});
+
+  (function loopSpec(){
+    spectrumRaf=requestAnimationFrame(loopSpec);
+    if(window._labPaused && window._labPaused.cmb) return;
+    spectrumPhase+=0.04;
+    spectrumCurrentPeak+=(spectrumPeakTarget-spectrumCurrentPeak)*0.03;
+    var sw=sc.clientWidth||sc.parentElement.clientWidth||400, sh=110;
+    if(sc.width!==sw){ sc.width=sw; }
+    sc.height=sh;
+    var ctx=sc.getContext('2d');
+    ctx.fillStyle='#03030d'; ctx.fillRect(0,0,sw,sh);
+    ctx.strokeStyle='rgba(255,255,255,.05)'; ctx.lineWidth=1;
+    for(var g=1;g<4;g++){ ctx.beginPath(); ctx.moveTo(0,sh/4*g); ctx.lineTo(sw,sh/4*g); ctx.stroke(); }
+    var bw=sw/BINS;
+    for(var b=0;b<BINS;b++){
+      var nv=noiseBase[b]*(0.7+0.3*Math.sin(spectrumPhase+b*0.5))+(Math.random()*0.03);
+      var pk=(b===TARGET_BIN)?spectrumCurrentPeak:(Math.abs(b-TARGET_BIN)===1)?spectrumCurrentPeak*0.3:0;
+      var val=Math.min(1,nv+pk);
+      var barH=val*(sh-6);
+      var isT=Math.abs(b-TARGET_BIN)<=1&&spectrumCurrentPeak>0.05;
+      var gr=ctx.createLinearGradient(0,sh-barH,0,sh);
+      if(isT){ gr.addColorStop(0,'rgba(255,215,0,.95)'); gr.addColorStop(1,'rgba(255,140,0,.2)'); }
+      else    { gr.addColorStop(0,'rgba(78,205,196,.75)'); gr.addColorStop(1,'rgba(78,205,196,.08)'); }
+      ctx.fillStyle=gr;
+      ctx.fillRect(b*bw+1,sh-barH,bw-2,barH);
+    }
+    ctx.fillStyle='rgba(255,255,255,.3)'; ctx.font='8px Courier New';
+    ctx.textAlign='left';  ctx.fillText('0.01 Hz',2,sh-2);
+    ctx.textAlign='right'; ctx.fillText('0.60 Hz',sw-2,sh-2);
+    ctx.textAlign='center'; ctx.fillStyle='rgba(78,205,196,.5)';
+    ctx.font='9px Tajawal,sans-serif'; ctx.fillText('طيف قوة CMB – Hz',sw/2,11);
+    if(spectrumCurrentPeak>0.15){
+      var xp=TARGET_BIN*bw+bw/2;
+      ctx.strokeStyle='rgba(255,215,0,.55)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+      ctx.beginPath(); ctx.moveTo(xp,0); ctx.lineTo(xp,sh); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle='rgba(255,215,0,1)'; ctx.font='bold 9px Courier New'; ctx.textAlign='center';
+      ctx.fillText('0.115 Hz',xp,22);
+      if(spectrumCurrentPeak>0.7){
+        ctx.fillStyle='#FFD700'; ctx.font='bold 10px Tajawal,sans-serif';
+        ctx.fillText('> 5σ ✓',xp,35);
+      }
+    }
+  })();
+
+  /* ── زر FFT (نستبدل العنصر بكامله لإزالة المستمعات القديمة) ── */
+  var oldBtn=document.getElementById('cmb-fft-btn');
+  if(oldBtn){
+    var nb=oldBtn.cloneNode(true);
+    nb.textContent='▶ بدء تحليل فورييه';
+    nb.style.cssText=oldBtn.style.cssText;
+    nb.style.borderColor='var(--clr-teal)'; nb.style.color='var(--clr-teal)';
+    oldBtn.parentNode.replaceChild(nb,oldBtn);
+    nb.addEventListener('click',function(){
+      if(cmbFftDone) return;
+      cmbFftDone=true;
+      nb.textContent='⏳ تحليل جارٍ…';
+      nb.style.borderColor='var(--clr-gold)'; nb.style.color='var(--clr-gold)';
+      var t=0, ivl=setInterval(function(){
+        t+=0.06; spectrumPeakTarget=Math.min(0.88,spectrumPeakTarget+0.028);
+        if(t>=1.5){
+          clearInterval(ivl);
+          nb.textContent='✅ ذروة 0.115 Hz مكتشفة! (>5σ)';
+          if(window.showToast) showToast('🌌 CMB: ذروة بوكر f=0.115 Hz — >5σ محقق!','success',4000);
+        }
+      },100);
+    });
+  }
 }
 
 // ══════════════════════════════════════════
@@ -3843,30 +3868,15 @@ function stopDarkEnergyChart(){
   if(darkEnergyChart){ darkEnergyChart.destroy(); darkEnergyChart=null; }
 }
 
-// ══════════════════════════════════════════
-// ── مدير إطلاق/إيقاف المشاهد حسب التبويب ──
-// يتحقق من إيقاف جميع المشاهد عند تغيير التبويب
-// لمنع تراكم حلقات requestAnimationFrame
-// ══════════════════════════════════════════
-function stopAllTabScenes(){
-  stopCBScene();
-  stopCMBLab();
-  stopCasimirLab();
-  stopDarkMatterLab();
-  stopNeutrinoLab();
-  stopExerciseScene();
-  stopBCQuantumScene();
-  stopCatScene();
-}
-
-window.__tabSceneManager = {
-  eqs:    ()=>{ setupCBSlider(); initCBScene(); initZetaChart(); },
-  pred:   ()=>{ initCMBLab(); initCasimirLab(); initDarkMatterLab(); initNeutrinoLab(); },
-  exercises: ()=>{ initExerciseScene(); },
-  'boker-constant': ()=>{ initBCQuantumScene(); initCatScene(); initDarkEnergyChart(); },
+/* ───────────────────────────────────────────────────
+   stopAllTabScenes — يوقف كل حلقات رسم التبويبات
+   مُصدَّرة عالمياً لاستخدامها من TABS JS
+──────────────────────────────────────────────────── */
+window.stopAllTabScenes = function(){
+  ['stopCBScene','stopCMBLab','stopCasimirLab','stopDarkMatterLab',
+   'stopNeutrinoLab','stopExerciseScene','stopBCQuantumScene','stopCatScene']
+  .forEach(fn=>{ try{ if(typeof window[fn]==='function') window[fn](); }catch(e){} });
 };
-
-})(); // نهاية IIFE مختبرات التبويبات
 </script>
 
 <!-- ══ TABS JS — إصلاح شامل ══ -->
@@ -4255,122 +4265,6 @@ function captureCanvas(canvasId){
   }
 }
 
-// ════════════════════════════════════════
-// SPECTRUM ANALYZER — محلل الطيف الحي (FFT بسيطة)
-// يرسم طيف ضوضاء حي مع ذروة تظهر تدريجياً عند 0.115 Hz
-// ════════════════════════════════════════
-let spectrumRaf=null, spectrumActive=false, spectrumPhase=0;
-let targetPeakHeight = 0; // الذروة تنمو تدريجياً عند الضغط على FFT
-
-function initSpectrumAnalyzer(){
-  const canvas = document.getElementById('spectrum-canvas');
-  if(!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const W=canvas.clientWidth||400, H=110;
-  canvas.width=W; canvas.height=H;
-
-  const N_BINS = 80; // عدد نقاط التردد
-  const FREQ_MIN = 0.01, FREQ_MAX = 0.6; // Hz
-  const TARGET_BIN = Math.floor((0.115-FREQ_MIN)/(FREQ_MAX-FREQ_MIN)*N_BINS); // bin عند 0.115 Hz
-
-  // ضوضاء خلفية متحركة
-  const noiseBase = Array.from({length:N_BINS},()=>Math.random()*0.15+0.05);
-  let peakHeight = 0;
-
-  function drawSpectrum(){
-    spectrumRaf = requestAnimationFrame(drawSpectrum);
-    if(window._labPaused?.cmb) return;
-    spectrumPhase+=0.04;
-
-    // ارتفاع الذروة يتقارب إلى targetPeakHeight
-    peakHeight += (targetPeakHeight - peakHeight)*0.03;
-
-    const W2=canvas.clientWidth||W;
-    canvas.width=W2;
-    ctx.clearRect(0,0,W2,H);
-
-    // خلفية
-    ctx.fillStyle='#03030d';
-    ctx.fillRect(0,0,W2,H);
-
-    // خطوط شبكة
-    ctx.strokeStyle='rgba(255,255,255,.05)'; ctx.lineWidth=1;
-    for(let i=1;i<4;i++){
-      ctx.beginPath(); ctx.moveTo(0,H/4*i); ctx.lineTo(W2,H/4*i); ctx.stroke();
-    }
-
-    const binW = W2/N_BINS;
-    for(let b=0;b<N_BINS;b++){
-      // ضوضاء متحركة
-      const noise = noiseBase[b]*(0.7+0.3*Math.sin(spectrumPhase+b*0.4))+(Math.random()*0.04);
-      // قمة بوكر عند TARGET_BIN
-      const peakContrib = b===TARGET_BIN ? peakHeight : (b===TARGET_BIN-1||b===TARGET_BIN+1)?peakHeight*0.35:0;
-      const val = Math.min(1, noise + peakContrib);
-      const barH = val*(H-8);
-
-      // لون: عادي=تيل، القمة=ذهبي
-      const isTarget = Math.abs(b-TARGET_BIN)<=1;
-      const grad = ctx.createLinearGradient(0,H-barH,0,H);
-      if(isTarget && peakHeight>0.1){
-        grad.addColorStop(0,'rgba(255,215,0,.9)');
-        grad.addColorStop(1,'rgba(255,165,0,.4)');
-      } else {
-        grad.addColorStop(0,'rgba(78,205,196,.7)');
-        grad.addColorStop(1,'rgba(78,205,196,.15)');
-      }
-      ctx.fillStyle=grad;
-      ctx.fillRect(b*binW+1, H-barH, binW-2, barH);
-    }
-
-    // تسمية التردد المستهدف
-    const xTarget = TARGET_BIN * binW + binW/2;
-    if(peakHeight > 0.15){
-      ctx.fillStyle='rgba(255,215,0,.9)';
-      ctx.font=`bold 9px 'Courier New'`;
-      ctx.textAlign='center';
-      ctx.fillText('0.115 Hz', xTarget, H-barW+2||10);
-
-      // خط تحليل رأسي
-      ctx.strokeStyle='rgba(255,215,0,.4)'; ctx.lineWidth=1; ctx.setLineDash([2,2]);
-      ctx.beginPath(); ctx.moveTo(xTarget,0); ctx.lineTo(xTarget,H); ctx.stroke();
-      ctx.setLineDash([]);
-
-      // نص >5σ
-      if(peakHeight > 0.7){
-        ctx.fillStyle='rgba(255,215,0,1)';
-        ctx.font=`bold 10px 'Tajawal'`;
-        ctx.fillText('> 5σ ✓', xTarget, 14);
-      }
-    }
-
-    // تسمية محاور
-    ctx.fillStyle='rgba(255,255,255,.3)';
-    ctx.font='8px Courier New'; ctx.textAlign='left';
-    ctx.fillText('0.01 Hz', 2, H-2);
-    ctx.textAlign='right';
-    ctx.fillText('0.60 Hz', W2-2, H-2);
-    ctx.textAlign='center';
-    ctx.fillStyle='rgba(78,205,196,.5)';
-    ctx.font='9px Tajawal';
-    ctx.fillText('طيف قوة CMB', W2/2, 11);
-  }
-
-  drawSpectrum();
-
-  // زر FFT: يطلق نمو الذروة
-  document.getElementById('cmb-fft-btn')?.addEventListener('click', function(){
-    if(targetPeakHeight > 0.5) return;
-    // نمو تدريجي على 3 ثوانٍ
-    let t=0;
-    const grow = setInterval(()=>{
-      t+=0.05;
-      targetPeakHeight = Math.min(0.85, targetPeakHeight + 0.025);
-      if(t>=1.5){ clearInterval(grow); showToast('✅ ذروة CMB: f=0.115 Hz | إحصاء >5σ محقق!','success',4000); }
-    }, 100);
-    this.textContent = '⏳ تحليل جارٍ...';
-    this.style.borderColor='var(--clr-gold)'; this.style.color='var(--clr-gold)';
-  });
-}
 
 // ════════════════════════════════════════
 // GRAVITATIONAL LENSING — عدسة جاذبية تفاعلية
@@ -4540,13 +4434,12 @@ document.addEventListener('click', e=>{
 // تضمن صحة أبعاد الكانفاس قبل إنشاء Three.js renderer
 // ════════════════════════════════════════
 window.initPredLabs = function(){
-  // تأخير إضافي 100ms لضمان أن الكانفاسات لها clientWidth حقيقي
-  setTimeout(()=>{
-    if(window.initCMBLab)       { initCMBLab(); }
-    if(window.initCasimirLab)   { initCasimirLab(); }
-    if(window.initDarkMatterLab){ initDarkMatterLab(); }
-    if(window.initNeutrinoLab)  { initNeutrinoLab(); }
-    if(window.initSpectrumAnalyzer){ initSpectrumAnalyzer(); }
+  // تأخير 100ms لضمان أن الكانفاسات لها clientWidth حقيقي
+  setTimeout(function(){
+    if(window.initCMBLab)       initCMBLab();
+    if(window.initCasimirLab)   initCasimirLab();
+    if(window.initDarkMatterLab) initDarkMatterLab();
+    if(window.initNeutrinoLab)  initNeutrinoLab();
   }, 100);
 };
 
