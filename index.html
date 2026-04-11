@@ -1544,8 +1544,346 @@ input[type=range]::-webkit-slider-thumb {
   #bouker-gpt-window { width: calc(100vw - 2rem); left: 1rem; }
   #bouker-gpt-fab { left: 1rem; bottom: 1rem; }
 }
+/* ══════════════════════════════════════════
+   BLACK HOLE SIMULATOR — STYLES
+   يتبع نفس نظام الألوان والهوية البصرية للموقع
+══════════════════════════════════════════ */
+
+/* التخطيط الرئيسي — عمودان */
+#bh-main-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 1.1rem;
+  align-items: start;
+  margin-bottom: 1.2rem;
+}
+@media (max-width: 900px) {
+  #bh-main-grid { grid-template-columns: 1fr; }
+}
+
+/* بطاقة عامة */
+.bh-card {
+  background: rgba(255,255,255,.025);
+  border: 1px solid var(--clr-border);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+}
+.bh-card-title {
+  font-family: var(--font-display);
+  font-size: .95rem;
+  color: var(--clr-gold);
+  margin-bottom: .85rem;
+  padding-bottom: .45rem;
+  border-bottom: 1px solid var(--clr-border);
+  letter-spacing: .02em;
+}
+
+/* مجموعة حقل الإدخال */
+.bh-field-group { margin-bottom: .9rem; }
+.bh-label {
+  display: block;
+  font-size: .78rem;
+  color: var(--clr-muted);
+  margin-bottom: .35rem;
+  line-height: 1.5;
+}
+.bh-hint {
+  cursor: help;
+  color: var(--clr-teal);
+  font-size: .75rem;
+  margin-right: .25rem;
+}
+
+/* حقل الإدخال النصي */
+.bh-input {
+  width: 100%;
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--clr-border2);
+  border-radius: 7px;
+  padding: .45rem .75rem;
+  color: var(--clr-text);
+  font-family: var(--font-mono);
+  font-size: .88rem;
+  outline: none;
+  transition: border-color .2s;
+  flex: 1;
+}
+.bh-input:focus { border-color: var(--clr-teal); }
+
+/* قائمة الاختيار */
+.bh-select {
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--clr-border2);
+  border-radius: 7px;
+  padding: .4rem .6rem;
+  color: var(--clr-muted);
+  font-family: var(--font-body);
+  font-size: .78rem;
+  outline: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.bh-select:focus { border-color: var(--clr-teal); }
+.bh-select option { background: var(--clr-surface); }
+
+/* أشرطة التمرير */
+.bh-range {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  background: var(--clr-border);
+}
+.bh-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--clr-white);
+  border: 2px solid currentColor;
+  cursor: pointer;
+  box-shadow: 0 0 6px rgba(0,0,0,.4);
+}
+.bh-range-gold  { accent-color: var(--clr-gold); }
+.bh-range-teal  { accent-color: var(--clr-teal); }
+.bh-range-purple{ accent-color: var(--clr-purple2); }
+.bh-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: .65rem;
+  color: var(--clr-muted);
+  margin-top: .2rem;
+}
+.bh-val-gold   { color: var(--clr-gold);    font-family: var(--font-mono); font-weight: 600; }
+.bh-val-teal   { color: var(--clr-teal);    font-family: var(--font-mono); font-weight: 600; }
+.bh-val-purple { color: var(--clr-purple2); font-family: var(--font-mono); font-weight: 600; }
+
+/* Toggle Switch */
+.bh-toggle-row {
+  margin-bottom: .9rem;
+}
+.bh-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  cursor: pointer;
+  font-size: .8rem;
+  color: var(--clr-text);
+  flex-wrap: wrap;
+}
+.bh-toggle-switch { position: relative; flex-shrink: 0; }
+.bh-toggle-switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+.bh-toggle-track {
+  display: block;
+  width: 38px; height: 20px;
+  border-radius: 10px;
+  background: var(--clr-border2);
+  transition: background .25s;
+  position: relative;
+  cursor: pointer;
+}
+.bh-toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--clr-muted);
+  transition: transform .25s, background .25s;
+}
+.bh-toggle-switch input:checked ~ .bh-toggle-track {
+  background: rgba(78,205,196,.25);
+  border: 1px solid var(--clr-teal);
+}
+.bh-toggle-switch input:checked ~ .bh-toggle-track::after {
+  transform: translateX(18px);
+  background: var(--clr-teal);
+}
+
+/* زر الحساب الرئيسي */
+.bh-btn-primary {
+  width: 100%;
+  padding: .65rem 1rem;
+  background: linear-gradient(135deg, rgba(156,39,176,.2), rgba(78,205,196,.15));
+  border: 1px solid var(--clr-teal);
+  border-radius: 9px;
+  color: var(--clr-teal);
+  font-family: var(--font-body);
+  font-size: .9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .22s;
+  letter-spacing: .02em;
+}
+.bh-btn-primary:hover {
+  background: linear-gradient(135deg, rgba(156,39,176,.35), rgba(78,205,196,.28));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(78,205,196,.2);
+}
+.bh-btn-primary:active { transform: translateY(0) scale(.98); }
+
+/* عداد تمدد الزمن الكبير */
+.bh-dilation-display {
+  text-align: center;
+  padding: 1rem .5rem 1.1rem;
+  background: rgba(6,6,20,.6);
+  border-radius: 10px;
+  border: 1px solid rgba(255,215,0,.15);
+  margin-bottom: .9rem;
+}
+.bh-dilation-label {
+  font-size: .75rem;
+  color: var(--clr-muted);
+  letter-spacing: .06em;
+  margin-bottom: .3rem;
+  text-transform: uppercase;
+}
+.bh-dilation-value {
+  font-family: var(--font-mono);
+  font-size: 2.4rem;
+  font-weight: bold;
+  color: var(--clr-gold);
+  text-shadow: 0 0 20px rgba(255,215,0,.4);
+  line-height: 1.1;
+  letter-spacing: .04em;
+  transition: all .3s;
+}
+.bh-dilation-sub {
+  font-size: .74rem;
+  color: var(--clr-muted);
+  margin-top: .35rem;
+  line-height: 1.5;
+}
+
+/* شبكة النتائج الستة */
+.bh-results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .6rem;
+  margin-bottom: .85rem;
+}
+.bh-result-item {
+  border-radius: 8px;
+  padding: .6rem .7rem;
+  border: 1px solid;
+  text-align: center;
+  transition: transform .18s;
+}
+.bh-result-item:hover { transform: translateY(-2px); }
+.bh-result-teal  { background: rgba(78,205,196,.06);  border-color: rgba(78,205,196,.22); }
+.bh-result-gold  { background: rgba(255,215,0,.05);   border-color: rgba(255,215,0,.2); }
+.bh-result-red   { background: rgba(255,107,107,.05); border-color: rgba(255,107,107,.2); }
+.bh-result-purple{ background: rgba(156,39,176,.06);  border-color: rgba(156,39,176,.22); }
+.bh-result-label { font-size: .67rem; color: var(--clr-muted); margin-bottom: .25rem; line-height: 1.4; }
+.bh-result-val   { font-family: var(--font-mono); font-size: .95rem; font-weight: bold; color: var(--clr-white); }
+.bh-result-unit  { font-size: .62rem; color: var(--clr-muted); margin-top: .1rem; }
+
+/* صندوق حالة المادة */
+.bh-state-box {
+  background: rgba(6,6,20,.7);
+  border: 1px solid var(--clr-border2);
+  border-radius: 8px;
+  padding: .75rem .9rem;
+  margin-bottom: .75rem;
+  min-height: 3.5rem;
+  transition: border-color .3s;
+}
+.bh-state-label {
+  font-size: .72rem;
+  color: var(--clr-muted);
+  margin-bottom: .3rem;
+  letter-spacing: .04em;
+}
+.bh-state-text {
+  font-size: .84rem;
+  color: var(--clr-text);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+/* شريط التقدم */
+.bh-progress-wrap { margin-top: .1rem; }
+.bh-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: .72rem;
+  color: var(--clr-muted);
+  margin-bottom: .3rem;
+}
+.bh-progress-track {
+  height: 6px;
+  background: var(--clr-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.bh-progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--clr-teal), var(--clr-gold), var(--clr-red));
+  transition: width .5s cubic-bezier(.4,0,.2,1);
+}
+
+/* أسطورة الألوان */
+.bh-legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: .55rem .2rem;
+  font-size: .72rem;
+  color: var(--clr-muted);
+  border-top: 1px solid var(--clr-border);
+  margin-top: .5rem;
+}
+.bh-legend-item { display: flex; align-items: center; gap: .35rem; }
+.bh-leg-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* شريط المعلومات السفلي */
+.bh-info-bar {
+  background: rgba(6,6,20,.7);
+  border-radius: 0 0 8px 8px;
+  padding: .4rem .7rem;
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  color: var(--clr-muted);
+  text-align: center;
+  border: 1px solid var(--clr-border);
+  border-top: none;
+  margin-top: -.1rem;
+}
+
+/* شبكة المعادلات */
+.bh-eq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: .85rem;
+}
+.bh-eq-card {
+  background: rgba(255,255,255,.02);
+  border: 1px solid var(--clr-border);
+  border-radius: 10px;
+  padding: .85rem;
+}
+.bh-eq-title {
+  font-size: .78rem;
+  color: var(--clr-teal);
+  margin-bottom: .4rem;
+  font-weight: 600;
+}
+
+/* رسوم متحركة لتحديث القيم */
+@keyframes bhValuePop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.08); color: var(--clr-gold); }
+  100% { transform: scale(1); }
+}
+.bh-value-updated { animation: bhValuePop .4s ease; }
 </style>
-</head>
 <body>
 
 <!-- Loading Screen -->
@@ -1739,6 +2077,7 @@ input[type=range]::-webkit-slider-thumb {
         <button class="tab-btn" data-tab="roadmap" role="tab" aria-selected="false" aria-controls="tab-roadmap">📈 الخارطة الزمنية</button>
         <button class="tab-btn" data-tab="faq" role="tab" aria-selected="false" aria-controls="tab-faq">🧠 الأسئلة الشائعة</button>
         <button class="tab-btn" data-tab="boker-constant" role="tab" aria-selected="false" aria-controls="tab-boker-constant">⚛️ ثابت بوكر للتجلي</button>
+        <button class="tab-btn" data-tab="blackhole" role="tab" aria-selected="false" aria-controls="tab-blackhole">🕳️ أفق البيان البوكري</button>
       </div>
     </div>
 
@@ -2624,6 +2963,214 @@ $$❶ = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 0 \end{pmatrix},\quad 
         </div>
       </div>
     </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         تبويب: محاكاة أفق حدث البيان البوكري
+         Black Hole Simulator — The Boukreean Horizon
+    ═══════════════════════════════════════════════════════════════ -->
+    <div class="tab-pane" id="tab-blackhole" aria-hidden="true">
+      <div class="hyp-scroll" id="bh-scroll">
+
+        <h1 style="color:var(--clr-gold);border-bottom:2px solid var(--clr-purple);padding-bottom:.4rem;font-family:var(--font-display);">
+          🕳️ Black Hole Simulator: The Boukreean Horizon
+        </h1>
+        <p style="color:var(--clr-purple2);font-size:.95rem;margin-bottom:1.2rem;font-style:italic;">
+          محاكاة أفق حدث الثقب الأسود وفق مقياس البيان البوكري المعدَّل
+        </p>
+
+        <!-- الفقرة التعريفية العلمية -->
+        <div style="background:rgba(156,39,176,.07);border:1px solid rgba(156,39,176,.25);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;line-height:1.85;">
+          <p style="color:var(--clr-text);font-size:.88rem;margin:0;">
+            تعتمد محاكاة أفق الحدث الكلاسيكية على مقياس شفارتزشيلد المشتق من معادلات أينشتاين،
+            الذي يصف نقطة التفرد كـ"كثافة لا نهائية" خارجة عن نطاق الوصف الرياضي المنتهي.
+            في المقابل، تقترح <strong style="color:var(--clr-gold);">فرضية البيان البوكري</strong> أن نصف قطر شفارتزشيلد
+            يتأثر بعاملَي <em style="color:var(--clr-teal);">الاستقرار البنيوي BS</em> و<em style="color:var(--clr-teal);">معامل التجلي η</em>،
+            بحيث تصبح نقطة التفرد ليست انهياراً في اللانهاية، بل <strong style="color:var(--clr-purple2);">انتقالاً طورياً</strong>
+            من حالة الواحد الطبيعي ① إلى حالة الإمكانية المحضة 0ₚ.
+            يُضاف إلى ذلك تأثير <strong style="color:var(--clr-gold);">ثابت التجلي البوكري 𝒞ℬ = 6.184033×10⁻⁴²</strong>
+            الذي يُحدث انحرافاً صغيراً لكن قابلاً للقياس في حسابات التمدد الزمني قرب الأفق.
+          </p>
+        </div>
+
+        <!-- التخطيط الرئيسي -->
+        <div id="bh-main-grid">
+
+          <!-- عمود الإدخال والنتائج -->
+          <div id="bh-controls-col">
+            <div class="bh-card">
+              <div class="bh-card-title">⚙️ لوحة التحكم</div>
+
+              <div class="bh-field-group">
+                <label class="bh-label" for="bh-obj-mass">كتلة الجسم المقترب (كغ)</label>
+                <div style="display:flex;gap:.5rem;align-items:center;">
+                  <input type="number" id="bh-obj-mass" class="bh-input"
+                         value="70" min="0.001" max="1e30" step="1"
+                         aria-label="كتلة الجسم المقترب بالكيلوغرام">
+                  <select id="bh-mass-preset" class="bh-select" aria-label="اختيار نوع الجسم">
+                    <option value="70">إنسان (70 kg)</option>
+                    <option value="1000">آلة (1 t)</option>
+                    <option value="1e6">كويكب (10⁶ kg)</option>
+                    <option value="2e30">نجم (M☉)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="bh-field-group">
+                <label class="bh-label" for="bh-bh-mass">كتلة الثقب الأسود (أضعاف M☉)</label>
+                <input type="range" id="bh-bh-mass" class="bh-range bh-range-gold"
+                       min="3" max="1000" step="1" value="10">
+                <div class="bh-range-labels">
+                  <span>3 M☉</span>
+                  <span id="bh-bh-mass-val" class="bh-val-gold">10 M☉</span>
+                  <span>1000 M☉</span>
+                </div>
+              </div>
+
+              <div class="bh-field-group">
+                <label class="bh-label" for="bh-distance">المسافة من الأفق (× r<sub>s</sub>)</label>
+                <input type="range" id="bh-distance" class="bh-range bh-range-teal"
+                       min="1.01" max="50" step="0.01" value="5">
+                <div class="bh-range-labels">
+                  <span>عند الأفق (1.01)</span>
+                  <span id="bh-dist-val" class="bh-val-teal">5.00 r<sub>s</sub></span>
+                  <span>50 r<sub>s</sub></span>
+                </div>
+              </div>
+
+              <div class="bh-field-group">
+                <label class="bh-label" for="bh-bs-val">الاستقرار البنيوي BS للجسم</label>
+                <input type="range" id="bh-bs-val" class="bh-range bh-range-purple"
+                       min="0.01" max="1" step="0.001" value="0.667">
+                <div class="bh-range-labels">
+                  <span>0 (انهيار)</span>
+                  <span id="bh-bs-display" class="bh-val-purple">0.667 (①)</span>
+                  <span>1 (مطلق)</span>
+                </div>
+              </div>
+
+              <div class="bh-toggle-row">
+                <label class="bh-toggle-label" for="bh-boukreean-toggle">
+                  <div class="bh-toggle-switch">
+                    <input type="checkbox" id="bh-boukreean-toggle" checked>
+                    <span class="bh-toggle-track"></span>
+                  </div>
+                  <span>تفعيل مقياس البيان البوكري المعدَّل (𝒞ℬ + BS)</span>
+                </label>
+              </div>
+
+              <button id="bh-calc-btn" class="bh-btn-primary">⚡ احسب معاملات الأفق</button>
+            </div>
+
+            <!-- بطاقة النتائج -->
+            <div class="bh-card" style="margin-top:.9rem;">
+              <div class="bh-card-title">📊 النتائج الحسابية</div>
+
+              <div class="bh-dilation-display">
+                <div class="bh-dilation-label">عامل تمدد الزمن (γ<sub>B</sub>)</div>
+                <div class="bh-dilation-value" id="bh-dilation-counter">—</div>
+                <div class="bh-dilation-sub" id="bh-dilation-sub">ثانية عند الجسم = ? سنة على الأرض</div>
+              </div>
+
+              <div class="bh-results-grid">
+                <div class="bh-result-item bh-result-teal">
+                  <div class="bh-result-label">r<sub>s</sub> كلاسيكي</div>
+                  <div class="bh-result-val" id="bh-rs-val">—</div>
+                  <div class="bh-result-unit">كم</div>
+                </div>
+                <div class="bh-result-item bh-result-gold">
+                  <div class="bh-result-label">r<sub>B</sub> بوكري</div>
+                  <div class="bh-result-val" id="bh-rs-bouker-val">—</div>
+                  <div class="bh-result-unit">كم</div>
+                </div>
+                <div class="bh-result-item bh-result-red">
+                  <div class="bh-result-label">مؤشر التسباغتي</div>
+                  <div class="bh-result-val" id="bh-tidal-val">—</div>
+                  <div class="bh-result-unit">/100</div>
+                </div>
+                <div class="bh-result-item bh-result-purple">
+                  <div class="bh-result-label">الانزياح الأحمر z</div>
+                  <div class="bh-result-val" id="bh-redshift-val">—</div>
+                  <div class="bh-result-unit">بلا أبعاد</div>
+                </div>
+                <div class="bh-result-item bh-result-teal">
+                  <div class="bh-result-label">إشعاع هوكينج-بوكر</div>
+                  <div class="bh-result-val" id="bh-hawking-val">—</div>
+                  <div class="bh-result-unit">keV</div>
+                </div>
+                <div class="bh-result-item bh-result-gold">
+                  <div class="bh-result-label">تصحيح بوكري Δr</div>
+                  <div class="bh-result-val" id="bh-delta-val">—</div>
+                  <div class="bh-result-unit">متر</div>
+                </div>
+              </div>
+
+              <div class="bh-state-box" id="bh-state-box">
+                <div class="bh-state-label">🧬 تنبؤ حالة المادة:</div>
+                <div class="bh-state-text" id="bh-state-text">اضغط "احسب" للتنبؤ…</div>
+              </div>
+
+              <div class="bh-progress-wrap">
+                <div class="bh-progress-label">
+                  <span>شدة تأثير الأفق</span>
+                  <span id="bh-horizon-pct">0%</span>
+                </div>
+                <div class="bh-progress-track">
+                  <div class="bh-progress-fill" id="bh-progress-fill"></div>
+                </div>
+              </div>
+            </div>
+          </div><!-- /bh-controls-col -->
+
+          <!-- عمود التصور البصري -->
+          <div id="bh-visual-col">
+            <div class="bh-card" style="height:100%;display:flex;flex-direction:column;">
+              <div class="bh-card-title">🌀 تصور الأفق الديناميكي</div>
+              <canvas id="bh-canvas" aria-label="محاكاة بصرية للثقب الأسود" role="img"
+                      style="flex:1;border-radius:8px;background:#03030d;border:1px solid var(--clr-border);display:block;width:100%;min-height:320px;cursor:crosshair;"></canvas>
+              <div class="bh-legend">
+                <span class="bh-legend-item"><span class="bh-leg-dot" style="background:#FF6B6B;"></span>أفق كلاسيكي (r<sub>s</sub>)</span>
+                <span class="bh-legend-item"><span class="bh-leg-dot" style="background:#FFD700;box-shadow:0 0 4px #FFD700;"></span>أفق بوكري (r<sub>B</sub>)</span>
+                <span class="bh-legend-item"><span class="bh-leg-dot" style="background:#4ECDC4;"></span>الجسم المقترب</span>
+              </div>
+              <div class="bh-info-bar">
+                <span id="bh-info-text">انقر "احسب" لبدء المحاكاة البصرية</span>
+              </div>
+            </div>
+          </div>
+        </div><!-- /bh-main-grid -->
+
+        <!-- المعادلات المرجعية -->
+        <div style="margin-top:1.5rem;">
+          <h2 style="color:var(--clr-teal);font-family:var(--font-display);font-size:1.2rem;margin-bottom:.8rem;">📐 المعادلات المستخدمة في المحاكاة</h2>
+          <div class="bh-eq-grid">
+            <div class="bh-eq-card">
+              <div class="bh-eq-title">نصف قطر شفارتزشيلد الكلاسيكي</div>
+              <div class="math-block" style="font-size:.8rem;">$$r_s = \frac{2GM}{c^2}$$</div>
+            </div>
+            <div class="bh-eq-card">
+              <div class="bh-eq-title">نصف القطر البوكري المعدَّل</div>
+              <div class="math-block" style="font-size:.8rem;">$$r_{\mathcal{B}} = r_s \cdot \left(1 - \mathcal{CB} \cdot \frac{BS_{\text{obj}}}{BS_{①}}\right)$$</div>
+            </div>
+            <div class="bh-eq-card">
+              <div class="bh-eq-title">عامل تمدد الزمن البوكري</div>
+              <div class="math-block" style="font-size:.8rem;">$$\gamma_{\mathcal{B}} = \frac{1}{\sqrt{1 - \dfrac{r_{\mathcal{B}}}{r \cdot BS_{\text{obj}}}}}$$</div>
+            </div>
+            <div class="bh-eq-card">
+              <div class="bh-eq-title">درجة حرارة هوكينج المعدَّلة*</div>
+              <div class="math-block" style="font-size:.8rem;">$$T_{\mathcal{B}} = \frac{\hbar c^3}{8\pi G M k_B}\!\cdot\!(1 + \mathcal{CB}\cdot\eta)$$</div>
+            </div>
+          </div>
+          <div class="callout callout-gold" style="margin-top:1rem;font-size:.82rem;">
+            <div class="callout-title">📝 ملاحظة منهجية — الاستكمال المنطقي للفرضية</div>
+            معادلتا r<sub>B</sub> و γ<sub>B</sub> هما <strong>استكمال منطقي مقترح</strong> بناءً على بنية فرضية البيان البوكري
+            وفيزياء الثقوب السوداء الكمومية. التصحيح البوكري بمقدار 𝒞ℬ × BS(obj) / BS(①)
+            ≈ 4.3×10⁻⁴² يُحدث انحرافاً نسبياً ضئيلاً ولكنه قابل للقياس نظرياً بأجهزة دقيقة جداً.
+            (*) معادلة هوكينج المعدَّلة تتضمن تصحيحاً استكمالياً بمعامل η — تحتاج تأكيداً رياضياً صارماً.
+          </div>
+        </div>
+
+      </div><!-- /hyp-scroll -->
+    </div><!-- /tab-blackhole -->
 
   </section>
 
@@ -4254,6 +4801,7 @@ window.stopAllTabScenes = function(){
     exercises:        ()=>{ if(window.initExerciseScene) initExerciseScene(); },
     'boker-constant': ()=>{ if(window.initBCQuantumScene) initBCQuantumScene(); if(window.initCatScene) initCatScene(); if(window.initDarkEnergyChart) initDarkEnergyChart(); },
     protocols:        ()=>{ if(window.initSensitivityChart) initSensitivityChart(); },
+    blackhole:        ()=>{ if(window.initBHSimulator) initBHSimulator(); },
   };
 
   const btns  = document.querySelectorAll('.tab-btn');
@@ -5051,3 +5599,549 @@ mermaid.initialize({
     background: '#060610',
     primaryColor: '#9C27B0',
     
+    edgeLabelBackground: '#060610',
+    clusterBkg: '#0d0d1e',
+    titleColor: '#FFD700',
+    nodeTextColor: '#ffffff',
+  },
+  flowchart: { curve: 'basis', htmlLabels: true },
+  fontFamily: 'Tajawal, sans-serif',
+});
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════
+     BLACK HOLE SIMULATOR ENGINE — محرك محاكاة أفق البيان البوكري
+     الفيزياء: نسبية عامة + تصحيحات فرضية البيان البوكري
+     المعادلات: r_s، γ_B، T_Hawking-Bouker، مؤشر التسباغتي
+══════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+'use strict';
+
+/* ═══════════════════════════════════════════════════
+   الثوابت الفيزيائية الأساسية
+═══════════════════════════════════════════════════ */
+const G     = 6.674e-11;       // ثابت الجاذبية (م³/كغ/ث²)
+const c     = 2.998e8;         // سرعة الضوء (م/ث)
+const hbar  = 1.055e-34;       // ثابت بلانك المختزل (ج·ث)
+const kB    = 1.381e-23;       // ثابت بولتزمان (ج/ك)
+const Msun  = 1.989e30;        // كتلة الشمس (كغ)
+const eV    = 1.602e-19;       // إلكترون فولت (ج)
+
+/* ═══════════════════════════════════════════════════
+   ثوابت فرضية البيان البوكري
+   🔑 هذه هي نقطة التطبيق المباشر للفرضية
+═══════════════════════════════════════════════════ */
+const CB        = 6.184033e-42; // ثابت التجلي البوكري 𝒞ℬ
+const BS_UNITY  = 2/3;          // BS(①) = 2/3 — الاستقرار البنيوي للواحد الطبيعي
+const CB_THRESH = 2/43;         // عتبة الانهيار الكمومي = BS(43) ≈ 0.0465
+
+/* ═══════════════════════════════════════════════════
+   محرك الحساب البوكري
+═══════════════════════════════════════════════════ */
+
+/**
+ * احسب نصف قطر شفارتزشيلد الكلاسيكي
+ * r_s = 2GM/c²
+ * @param {number} M_solar — كتلة الثقب الأسود بوحدات M☉
+ * @returns {number} نصف القطر بالكيلومترات
+ */
+function schwarzschildRadius(M_solar){
+  const M = M_solar * Msun;
+  return (2 * G * M) / (c * c) / 1000; // تحويل لكيلومترات
+}
+
+/**
+ * 🔑 نصف قطر شفارتزشيلد المعدَّل بموجب فرضية البيان البوكري
+ * r_B = r_s × (1 - 𝒞ℬ × BS_obj/BS_①)
+ *
+ * المنطق: الجسيم ذو الاستقرار البنيوي العالي يُحوّل
+ * جزءاً ضئيلاً من الطاقة إلى "إمكانية"، مما يُقلص
+ * نصف قطر الأفق الفعّال قليلاً.
+ *
+ * استكمال منطقي مقترح للفرضية — يحتاج تأكيداً رياضياً.
+ * @param {number} rs_km — نصف القطر الكلاسيكي (كم)
+ * @param {number} BS_obj — استقرار الجسم البنيوي
+ * @returns {number} نصف القطر المعدَّل (كم)
+ */
+function boukreeanRadius(rs_km, BS_obj){
+  // 🔑 تطبيق ثابت 𝒞ℬ: عامل التصحيح البوكري
+  const correction = CB * (BS_obj / BS_UNITY);
+  return rs_km * (1 - correction);
+}
+
+/**
+ * 🔑 عامل تمدد الزمن البوكري
+ * γ_B = 1 / sqrt(1 - r_B / (r × BS_obj))
+ *
+ * يختلف عن معادلة شفارتزشيلد الكلاسيكية بتضمين BS_obj في المقام
+ * مما يعني أن جسماً بـ BS أعلى يتأثر أقل بتمدد الزمن
+ * (تفسير: قربه من المطلق يمنحه استقراراً زمنياً)
+ * @param {number} rB_km — نصف القطر البوكري (كم)
+ * @param {number} r_km  — المسافة الفعلية (كم)
+ * @param {number} BS_obj
+ * @returns {number} عامل تمدد الزمن (بلا أبعاد)
+ */
+function timeDilationFactor(rB_km, r_km, BS_obj){
+  const ratio = rB_km / (r_km * BS_obj);
+  if(ratio >= 1) return Infinity; // داخل الأفق
+  return 1 / Math.sqrt(1 - ratio);
+}
+
+/**
+ * مؤشر التسباغتي (Spaghettification Index)
+ * قيمة 0-100 تمثل شدة قوى المد والجزر
+ *
+ * تعتمد على نسبة الجاذبية التفاضلية بين رأس وقدم الجسم
+ * مُضاف إليها تصحيح بوكري يُخفف التأثير عند BS عالٍ
+ * @param {number} M_solar — كتلة الثقب الأسود
+ * @param {number} r_km   — المسافة الفعلية (كم)
+ * @param {number} m_obj  — كتلة الجسم (كغ)
+ * @param {number} BS_obj — الاستقرار البنيوي
+ * @returns {number} مؤشر 0-100
+ */
+function tidalForceIndex(M_solar, r_km, m_obj, BS_obj){
+  const M = M_solar * Msun;
+  const r = r_km * 1000; // متر
+  const L = Math.min(2, m_obj / 50); // طول الجسم تقريبي (متر)
+  // قوة المد الكلاسيكية: F_tidal = 2GMmL/r³
+  const F_tidal = (2 * G * M * m_obj * L) / Math.pow(r, 3);
+  // 🔑 تصحيح بوكري: BS العالي يُقلل تأثير التسباغتي
+  const bouker_reduction = 1 - CB * (BS_obj / BS_UNITY);
+  const F_corrected = F_tidal * bouker_reduction;
+  // تطبيع لوغاريتمي لنطاق 0-100
+  const index = Math.min(100, Math.log10(Math.max(1, F_corrected)) * 8);
+  return Math.max(0, index);
+}
+
+/**
+ * الانزياح الأحمر الجاذبوي (Gravitational Redshift)
+ * z = 1/sqrt(1 - r_s/r) - 1  (كلاسيكي)
+ * z_B: مع تصحيح بوكري يُخفف الانزياح عند BS عالٍ
+ */
+function gravitationalRedshift(rs_km, rB_km, r_km, BS_obj, useBouker){
+  const r_used = useBouker ? rB_km : rs_km;
+  const ratio = r_used / r_km;
+  if(ratio >= 1) return Infinity;
+  const z_classic = 1/Math.sqrt(1 - ratio) - 1;
+  if(!useBouker) return z_classic;
+  // 🔑 تصحيح بوكري: BS يُعدّل الانزياح الأحمر
+  return z_classic * (1 - CB * BS_obj);
+}
+
+/**
+ * 🔑 درجة حرارة هوكينج المعدَّلة (Hawking-Bouker Temperature)
+ * T_B = (ℏc³)/(8πGMk_B) × (1 + 𝒞ℬ × η)
+ *
+ * الاستكمال: نضرب درجة حرارة هوكينج الكلاسيكية بمعامل
+ * (1 + 𝒞ℬ × η) حيث η هنا يمثل مدى التجلي عند الأفق.
+ * في حدود الأفق: η → 1 (تجلٍّ كامل للطاقة).
+ * استكمال منطقي يحتاج اشتقاقاً رياضياً صارماً.
+ */
+function hawkingBoukerTemp(M_solar, r_km, rs_km, BS_obj){
+  const M = M_solar * Msun;
+  const T_classic = (hbar * Math.pow(c,3)) / (8 * Math.PI * G * M * kB);
+  // 🔑 η عند هذه المسافة: نسبة قرب الأفق
+  const eta_local = Math.min(0.99, rs_km / r_km);
+  const T_bouker = T_classic * (1 + CB * eta_local);
+  // تحويل لطاقة بالكيلو-إلكترون-فولت
+  return (T_bouker * kB) / (eV * 1000);
+}
+
+/**
+ * تنبؤ حالة المادة عند الأفق — خاص بالبيان البوكري
+ * هذا هو القلب الفلسفي للمحاكاة:
+ * الفرضية تقترح أن المادة لا "تُسحق" بل تنتقل طورياً
+ */
+function predictMatterState(distRatio, BS_obj, tidalIdx, useBouker){
+  if(!useBouker){
+    // النسبية العامة الكلاسيكية
+    if(distRatio < 1.1)  return { text: '☠️ داخل أفق الحدث — تفرد كلاسيكي لا نهائي. لا مفر من التفرد وفق القياس الكلاسيكي.', color: '#FF4444', state: 'singularity' };
+    if(tidalIdx > 70)    return { text: '🌊 تسباغتي متطرف — تمزق المادة إلى تيار عمودي رفيع جداً قبل عبور الأفق.', color: '#FF6B6B', state: 'spaghetti' };
+    if(distRatio < 3)    return { text: '⏰ تمدد زمني شديد — ساعة على الجسم = سنوات على الأرض. اقتراب حرج.', color: '#FFA500', state: 'dilation' };
+    return { text: '🌀 منطقة آمنة نسبياً — تأثيرات نسبية ملحوظة لكن ليست مميتة بعد.', color: '#4ECDC4', state: 'safe' };
+  }
+
+  // ═══ البيان البوكري ═══
+  // 🔑 عند BS أعلى من العتبة، الجسم لا يُسحق بل ينتقل طورياً
+  if(distRatio < 1.01 || BS_obj <= CB_THRESH){
+    return {
+      text: '⚡ انتقال طوري إلى 0ₚ — الجسم لا يتفرد بل يعود إلى "الإمكانية المحضة". المعلومات تُحفظ كإشعاع معلوماتي وفق فرضية البيان البوكري.',
+      color: '#9C27B0', state: 'quantum_transition'
+    };
+  }
+  if(BS_obj <= CB_THRESH * 3){
+    return {
+      text: '🌌 على حافة الانهيار الكمومي — BS قريب من العتبة الحرجة. الجسم على وشك التحول إلى نقطة تفرد كمومي غير كلاسيكي.',
+      color: '#CE93D8', state: 'near_threshold'
+    };
+  }
+  if(tidalIdx > 60 && BS_obj < 0.5){
+    return {
+      text: '🔮 تسباغتي بوكري — قوى المد تحكم لكن BS يُبطئ التفكك. الجسيمات تنتقل بين مستويات التجلي ① → 0ₚ تدريجياً.',
+      color: '#FF8C00', state: 'bouker_spaghetti'
+    };
+  }
+  if(distRatio < 2){
+    return {
+      text: '⏳ تمدد زمني بوكري — الزمن يتمدد وفق γ_B المعدَّل. الجسم يُدرك الكون بشكل مختلف، لكن BS العالي يحمي بنيته الداخلية.',
+      color: '#FFD700', state: 'bouker_dilation'
+    };
+  }
+  if(distRatio < 10){
+    return {
+      text: '🌟 منطقة التأثير البوكري — تصحيحات 𝒞ℬ قابلة للقياس نظرياً. الجسم مستقر والتأثيرات على الحدود.',
+      color: '#4ECDC4', state: 'bouker_zone'
+    };
+  }
+  return {
+    text: '✅ منطقة آمنة — تأثيرات الأفق ضئيلة. مقياس البيان البوكري والكلاسيكي متطابقان عملياً عند هذه المسافة.',
+    color: '#80DEEA', state: 'safe'
+  };
+}
+
+/* ═══════════════════════════════════════════════════
+   مُحرك الرسم — Black Hole Canvas Renderer
+═══════════════════════════════════════════════════ */
+const BH_CANVAS = document.getElementById('bh-canvas');
+let bhAnimRaf = null;
+let bhState = null; // آخر حالة محسوبة لاستخدامها في الرسم
+
+function stopBHCanvas(){ if(bhAnimRaf){ cancelAnimationFrame(bhAnimRaf); bhAnimRaf=null; } }
+
+function renderBlackHole(state){
+  if(!BH_CANVAS) return;
+  const canvas = BH_CANVAS;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.clientWidth  || canvas.parentElement.clientWidth  || 400;
+  const H = canvas.clientHeight || canvas.parentElement.clientHeight || 360;
+  canvas.width  = W;
+  canvas.height = H;
+
+  const cx = W/2, cy = H/2;
+  let t = 0;
+  const { rs_km, rB_km, distRatio, tidalIdx, gamma, useBouker, distKm, stateObj } = state;
+
+  // أنصاف الأقطار البصرية (تكيّفية مع حجم الكانفاس)
+  const baseR    = Math.min(W,H) * 0.18;
+  const rsVisual = baseR;
+  const rBVisual = baseR * (rB_km / rs_km);
+  // موضع الجسم المقترب
+  const bodyOrbitR = Math.min(W,H) * 0.5 * Math.min(1, (distRatio - 1) / 8 + 0.35);
+
+  stopBHCanvas();
+
+  function draw(){
+    bhAnimRaf = requestAnimationFrame(draw);
+    t += 0.012;
+    ctx.clearRect(0,0,W,H);
+
+    /* --- خلفية النجوم --- */
+    ctx.fillStyle = '#03030d';
+    ctx.fillRect(0,0,W,H);
+    for(let i=0; i<80; i++){
+      const sx = (Math.sin(i*1.37+1)*0.5+0.5)*W;
+      const sy = (Math.cos(i*2.13+0.5)*0.5+0.5)*H;
+      const bright = 0.3+0.5*Math.abs(Math.sin(i*3.7+t*0.3));
+      ctx.fillStyle = `rgba(${180+Math.floor(i*0.7)},${180+Math.floor(i*0.3)},255,${bright*0.6})`;
+      ctx.beginPath(); ctx.arc(sx,sy,0.8,0,Math.PI*2); ctx.fill();
+    }
+
+    /* --- قرص التراكم (Accretion Disk) --- */
+    const diskGrad = ctx.createRadialGradient(cx,cy,rsVisual*0.9, cx,cy, rsVisual*2.6);
+    diskGrad.addColorStop(0,  'rgba(255,200,60,.55)');
+    diskGrad.addColorStop(0.3,'rgba(255,100,30,.35)');
+    diskGrad.addColorStop(0.65,'rgba(180,50,180,.2)');
+    diskGrad.addColorStop(1,  'rgba(50,50,120,0)');
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.scale(1, 0.28); // تسطيح بصري للقرص
+    ctx.beginPath();
+    ctx.arc(0,0,rsVisual*2.6,0,Math.PI*2);
+    ctx.fillStyle = diskGrad;
+    ctx.fill();
+    ctx.restore();
+
+    /* --- حلقات فوتونية دوّارة --- */
+    for(let ring=0; ring<3; ring++){
+      const rr = rsVisual * (1.0 + ring*0.18);
+      const alpha = (0.35 - ring*0.1) * (0.6+0.4*Math.sin(t*2+ring));
+      ctx.beginPath();
+      ctx.arc(cx,cy,rr,0,Math.PI*2);
+      ctx.strokeStyle = `rgba(255,220,80,${alpha})`;
+      ctx.lineWidth = ring===0 ? 2 : 1;
+      ctx.stroke();
+    }
+
+    /* --- أفق الحدث الكلاسيكي (أحمر) --- */
+    const gClassic = ctx.createRadialGradient(cx,cy,0, cx,cy,rsVisual);
+    gClassic.addColorStop(0, 'rgba(0,0,0,1)');
+    gClassic.addColorStop(0.85,'rgba(0,0,0,1)');
+    gClassic.addColorStop(1,'rgba(255,60,60,.6)');
+    ctx.beginPath();
+    ctx.arc(cx,cy,rsVisual,0,Math.PI*2);
+    ctx.fillStyle = gClassic;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,107,107,.7)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    /* --- 🔑 أفق البيان البوكري (ذهبي، أصغر قليلاً) --- */
+    if(useBouker && rBVisual < rsVisual){
+      const glowSize = 3 + 2*Math.sin(t*3);
+      ctx.shadowBlur = glowSize; ctx.shadowColor = '#FFD700';
+      ctx.beginPath();
+      ctx.arc(cx,cy,rBVisual,0,Math.PI*2);
+      ctx.strokeStyle = 'rgba(255,215,0,.85)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6,3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.shadowBlur = 0;
+    }
+
+    /* --- تحديد حالة المادة بصرياً --- */
+    if(stateObj){
+      const pulse = 1 + 0.06*Math.sin(t*4);
+      ctx.beginPath();
+      ctx.arc(cx,cy,rsVisual*pulse,0,Math.PI*2);
+      ctx.strokeStyle = stateObj.color + '40';
+      ctx.lineWidth = 8;
+      ctx.stroke();
+    }
+
+    /* --- الجسم المقترب (متحرك في مدار) --- */
+    const orbitAngle = t * (0.4 + Math.min(1.5, 3/distRatio));
+    const bx = cx + Math.cos(orbitAngle) * bodyOrbitR;
+    const by = cy + Math.sin(orbitAngle) * bodyOrbitR * 0.6;
+    // تأثير التسباغتي — تمدد الجسم عمودياً
+    const stretch = 1 + tidalIdx/150;
+    const bRadius = Math.max(3, 8 - tidalIdx/20);
+    ctx.save();
+    ctx.translate(bx, by);
+    ctx.scale(1/stretch, stretch);
+    const bGrad = ctx.createRadialGradient(0,0,0, 0,0,bRadius);
+    bGrad.addColorStop(0, '#4ECDC4');
+    bGrad.addColorStop(1, 'rgba(78,205,196,0)');
+    ctx.beginPath();
+    ctx.arc(0,0,bRadius,0,Math.PI*2);
+    ctx.fillStyle = bGrad;
+    ctx.fill();
+    ctx.restore();
+
+    /* --- ذيل الفوتون --- */
+    if(tidalIdx > 30){
+      for(let p=0; p<5; p++){
+        const pa = orbitAngle - p*0.08;
+        const px = cx + Math.cos(pa)*bodyOrbitR*0.98;
+        const py = cy + Math.sin(pa)*bodyOrbitR*0.6*0.98;
+        ctx.beginPath();
+        ctx.arc(px,py,2*(1-p/5),0,Math.PI*2);
+        ctx.fillStyle = `rgba(78,205,196,${0.3*(1-p/5)})`;
+        ctx.fill();
+      }
+    }
+
+    /* --- معامل γ فوق الكانفاس --- */
+    ctx.font = 'bold 13px "Courier New"';
+    ctx.textAlign = 'right';
+    ctx.fillStyle = 'rgba(255,215,0,.8)';
+    if(isFinite(gamma)){
+      ctx.fillText(`γ = ${gamma.toFixed(gamma>100?0:2)}`, W-10, 22);
+    } else {
+      ctx.fillStyle = 'rgba(255,100,100,.9)';
+      ctx.fillText('γ = ∞', W-10, 22);
+    }
+
+    /* --- عدادات المسافة --- */
+    ctx.font = '10px "Courier New"';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(78,205,196,.6)';
+    ctx.fillText(`d = ${distRatio.toFixed(2)} rₛ`, 8, 20);
+
+    /* --- تسميات الأفق --- */
+    ctx.font = '9px Tajawal,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,107,107,.7)';
+    ctx.fillText('rₛ كلاسيكي', cx, cy - rsVisual - 6);
+    if(useBouker && rBVisual < rsVisual){
+      ctx.fillStyle = 'rgba(255,215,0,.75)';
+      ctx.fillText('rB بوكري', cx, cy - rBVisual - 6);
+    }
+  }
+
+  draw();
+}
+
+/* ═══════════════════════════════════════════════════
+   دالة الحساب الرئيسية — تُستدعى عند الضغط على "احسب"
+═══════════════════════════════════════════════════ */
+function calculateBlackHole(){
+  /* ─ قراءة المدخلات ─ */
+  const M_bh    = parseFloat(document.getElementById('bh-bh-mass').value)   || 10;
+  const m_obj   = parseFloat(document.getElementById('bh-obj-mass').value)  || 70;
+  const distMul = parseFloat(document.getElementById('bh-distance').value)  || 5;
+  const BS_obj  = parseFloat(document.getElementById('bh-bs-val').value)    || 0.667;
+  const useBouker = document.getElementById('bh-boukreean-toggle').checked;
+
+  /* ─ حسابات أساسية ─ */
+  const rs_km  = schwarzschildRadius(M_bh);              // كلاسيكي
+  const rB_km  = boukreeanRadius(rs_km, BS_obj);         // 🔑 بوكري
+  const r_km   = (useBouker ? rB_km : rs_km) * distMul; // المسافة الفعلية
+  const gamma  = timeDilationFactor(useBouker ? rB_km : rs_km, r_km, BS_obj); // 🔑 بوكري
+  const tidal  = tidalForceIndex(M_bh, r_km, m_obj, useBouker ? BS_obj : 1);
+  const z      = gravitationalRedshift(rs_km, rB_km, r_km, BS_obj, useBouker);
+  const T_keV  = hawkingBoukerTemp(M_bh, r_km, rs_km, BS_obj); // 🔑 بوكري
+  const delta  = (rs_km - rB_km) * 1000; // الفرق بالمتر
+  const state  = predictMatterState(distMul, BS_obj, tidal, useBouker); // 🔑 بوكري
+
+  /* ─ تحديث واجهة المستخدم بحركة انتقالية ─ */
+  function updateEl(id, value, animate=true){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.textContent = value;
+    if(animate){
+      el.classList.remove('bh-value-updated');
+      void el.offsetWidth;
+      el.classList.add('bh-value-updated');
+    }
+  }
+
+  /* عداد γ الكبير */
+  const dilEl = document.getElementById('bh-dilation-counter');
+  const subEl = document.getElementById('bh-dilation-sub');
+  if(dilEl){
+    if(!isFinite(gamma)){
+      dilEl.textContent = '∞';
+      dilEl.style.color = '#FF4444';
+      if(subEl) subEl.textContent = 'الجسم داخل أفق الحدث — الزمن متوقف ظاهرياً';
+    } else {
+      dilEl.textContent = gamma > 1e6 ? gamma.toExponential(2) : gamma.toFixed(gamma>100?0:gamma>10?1:3);
+      dilEl.style.color = gamma > 100 ? '#FF6B6B' : gamma > 10 ? '#FFA500' : '#FFD700';
+      if(subEl){
+        const sec_earth = gamma > 3.15e7 ? '> سنة أرضية كاملة' : `${(gamma).toFixed(1)} ثانية أرضية`;
+        subEl.textContent = `ثانية 1 على الجسم ≡ ${sec_earth}`;
+      }
+    }
+  }
+
+  /* النتائج الستة */
+  updateEl('bh-rs-val', rs_km.toFixed(2));
+  updateEl('bh-rs-bouker-val', useBouker ? rB_km.toFixed(4) : '—');
+  updateEl('bh-tidal-val', tidal.toFixed(1));
+  updateEl('bh-redshift-val', isFinite(z) ? z.toFixed(z>100?0:z>10?1:3) : '∞');
+  updateEl('bh-hawking-val', T_keV < 0.001 ? T_keV.toExponential(2) : T_keV.toFixed(4));
+  updateEl('bh-delta-val', useBouker ? delta.toExponential(3) : '—');
+
+  /* شريط التقدم */
+  const horizonPct = Math.min(100, Math.max(0, (1 - (distMul-1)/49)*100));
+  const fillEl = document.getElementById('bh-progress-fill');
+  const pctEl  = document.getElementById('bh-horizon-pct');
+  if(fillEl) fillEl.style.width = horizonPct + '%';
+  if(pctEl)  pctEl.textContent  = horizonPct.toFixed(0) + '%';
+
+  /* حالة المادة */
+  const stateBox  = document.getElementById('bh-state-box');
+  const stateText = document.getElementById('bh-state-text');
+  if(stateText) stateText.textContent = state.text;
+  if(stateBox)  stateBox.style.borderColor = state.color + '80';
+
+  /* شريط المعلومات */
+  const infoEl = document.getElementById('bh-info-text');
+  if(infoEl){
+    infoEl.textContent = `M_BH=${M_bh}M☉ | rₛ=${rs_km.toFixed(2)}km | r=${r_km.toFixed(1)}km | BS=${BS_obj.toFixed(3)} | ${useBouker?'مقياس بوكري ✓':'كلاسيكي'}`;
+  }
+
+  /* إطلاق التصور البصري */
+  renderBlackHole({
+    rs_km, rB_km, distRatio: distMul, tidalIdx: tidal,
+    gamma: isFinite(gamma)?gamma:999, useBouker, distKm: r_km, stateObj: state
+  });
+
+  /* Toast إشعار */
+  if(window.showToast){
+    const msg = isFinite(gamma)
+      ? `🕳️ γ = ${gamma>1e6?gamma.toExponential(2):gamma.toFixed(2)} | حالة: ${state.state}`
+      : '🕳️ الجسم داخل أفق الحدث — تجلٍّ طوري بوكري!';
+    showToast(msg, gamma>100?'error':'success', 3000);
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   ربط عناصر التحكم بالمستمعات
+═══════════════════════════════════════════════════ */
+function initBHSimulator(){
+  /* زر الحساب الرئيسي */
+  document.getElementById('bh-calc-btn')?.addEventListener('click', calculateBlackHole);
+
+  /* Preset كتلة الجسم */
+  document.getElementById('bh-mass-preset')?.addEventListener('change', function(){
+    const inp = document.getElementById('bh-obj-mass');
+    if(inp) inp.value = this.value;
+  });
+
+  /* تحديث تسميات الأشرطة لحظياً */
+  document.getElementById('bh-bh-mass')?.addEventListener('input', function(){
+    const el = document.getElementById('bh-bh-mass-val');
+    if(el) el.textContent = this.value + ' M☉';
+  });
+  document.getElementById('bh-distance')?.addEventListener('input', function(){
+    const el = document.getElementById('bh-dist-val');
+    if(el) el.innerHTML = parseFloat(this.value).toFixed(2) + ' r<sub>s</sub>';
+  });
+  document.getElementById('bh-bs-val')?.addEventListener('input', function(){
+    const v = parseFloat(this.value);
+    const el = document.getElementById('bh-bs-display');
+    let label = '';
+    if(v >= 0.99) label = '(❶ مطلق)';
+    else if(Math.abs(v - 2/3) < 0.01) label = '(① طبيعي)';
+    else if(v <= CB_THRESH + 0.01) label = '(⚡ عتبة انهيار)';
+    else if(v <= 1/3 + 0.01) label = '(0ₚ إمكانية)';
+    if(el) el.textContent = v.toFixed(3) + ' ' + label;
+  });
+
+  /* حساب تلقائي عند تغيير أي شريط */
+  ['bh-bh-mass','bh-distance','bh-bs-val'].forEach(id=>{
+    document.getElementById(id)?.addEventListener('input', ()=>{
+      // حساب تلقائي مع تأخير بسيط (debounce)
+      clearTimeout(window._bhDebounce);
+      window._bhDebounce = setTimeout(calculateBlackHole, 180);
+    });
+  });
+
+  /* حساب فوري عند تغيير الـ Toggle */
+  document.getElementById('bh-boukreean-toggle')?.addEventListener('change', calculateBlackHole);
+
+  /* حساب أولي تلقائي */
+  calculateBlackHole();
+}
+
+/* ═══════════════════════════════════════════════════
+   تسجيل التبويب في مدير المشاهد
+   يُشغَّل عند فتح تبويب "أفق البيان البوكري"
+═══════════════════════════════════════════════════ */
+window.initBHSimulator = initBHSimulator;
+window.stopBHCanvas    = stopBHCanvas;
+
+/* إضافة blackhole لخريطة تهيئة التبويبات في TABS JS */
+if(window.__tabSceneManager){
+  window.__tabSceneManager['blackhole'] = initBHSimulator;
+}
+
+/* الاستماع لحدث تفعيل التبويب عبر SCENE_INITS */
+document.addEventListener('DOMContentLoaded', ()=>{
+  // resize canvas when tab becomes active
+  const observer = new MutationObserver(mutations=>{
+    mutations.forEach(m=>{
+      if(m.target.id === 'tab-blackhole' && m.target.classList.contains('active')){
+        setTimeout(initBHSimulator, 80);
+      }
+    });
+  });
+  const bhPane = document.getElementById('tab-blackhole');
+  if(bhPane) observer.observe(bhPane, { attributes:true, attributeFilter:['class'] });
+});
+
+})(); // نهاية Black Hole Engine IIFE
+</script>
+</html>
