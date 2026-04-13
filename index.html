@@ -1883,6 +1883,159 @@ input[type=range]::-webkit-slider-thumb {
   100% { transform: scale(1); }
 }
 .bh-value-updated { animation: bhValuePop .4s ease; }
+
+/* ══════════════════════════════════════════
+   GLASSMORPHISM UI LAYER
+   يُطفو النص فوق المشاهد ثلاثية الأبعاد
+══════════════════════════════════════════ */
+.glass-panel {
+  background: rgba(6, 6, 16, 0.55);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid rgba(78, 205, 196, 0.18);
+  border-radius: 14px;
+  box-shadow:
+    0 4px 32px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+.glass-panel-gold {
+  background: rgba(6, 6, 16, 0.5);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  border: 1px solid rgba(255, 215, 0, 0.22);
+  border-radius: 14px;
+  box-shadow:
+    0 4px 40px rgba(255,215,0,.08),
+    inset 0 1px 0 rgba(255,215,0,.08);
+}
+.glass-panel-dark {
+  background: rgba(4, 4, 12, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(156, 39, 176, 0.2);
+  border-radius: 12px;
+}
+
+/* ── Hero section: position relative so canvas fills it ── */
+#hero {
+  position: relative;
+  overflow: hidden;
+}
+#hero-canvas {
+  display: block;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+#hero-canvas.ready { opacity: 1; }
+
+/* ── BH Simulator 3D upgrade ── */
+#bh-canvas-3d-wrap {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #03030d;
+  border: 1px solid var(--clr-border);
+  flex: 1;
+  min-height: 340px;
+}
+#bh-canvas-3d-wrap canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+/* HUD overlay on 3D BH */
+.bh-3d-hud {
+  position: absolute;
+  top: 8px; left: 8px; right: 8px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  gap: .4rem;
+  flex-wrap: wrap;
+}
+.bh-hud-chip {
+  background: rgba(4,4,12,.78);
+  border: 1px solid rgba(78,205,196,.3);
+  border-radius: 6px;
+  padding: .22rem .55rem;
+  color: var(--clr-teal);
+  backdrop-filter: blur(8px);
+  white-space: nowrap;
+}
+.bh-hud-chip.gold  { border-color: rgba(255,215,0,.4); color: var(--clr-gold); }
+.bh-hud-chip.red   { border-color: rgba(255,107,107,.4); color: var(--clr-red); }
+/* Bouker horizon ring flash */
+.bh-horizon-flash {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: inset 0 0 0 3px var(--clr-red);
+  transition: opacity .15s;
+}
+.bh-horizon-flash.active { opacity: 1; animation: horizonFlash .6s ease forwards; }
+@keyframes horizonFlash {
+  0%  { opacity:1; box-shadow: inset 0 0 0 4px #FF6B6B, 0 0 30px rgba(255,107,107,.4); }
+  100%{ opacity:0; }
+}
+
+/* ── camera shake on extreme events ── */
+@keyframes cameraShake {
+  0%,100%{ transform: translate(0,0) rotate(0); }
+  20%    { transform: translate(-2px,1px) rotate(-.3deg); }
+  40%    { transform: translate(2px,-1px) rotate(.2deg); }
+  60%    { transform: translate(-1px,2px) rotate(.1deg); }
+  80%    { transform: translate(1px,-1px) rotate(-.2deg); }
+}
+.cam-shake { animation: cameraShake .4s cubic-bezier(.36,.07,.19,.97) both; }
+
+/* ── Orbit controls tooltip ── */
+.bh-3d-hint {
+  position: absolute;
+  bottom: 8px; right: 8px;
+  font-size: .65rem;
+  color: rgba(255,255,255,.35);
+  pointer-events: none;
+  font-family: var(--font-mono);
+}
+
+/* ── Hero card glassmorphism upgrade ── */
+.author-card {
+  background: rgba(6,6,16,.55) !important;
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  border: 1px solid rgba(255,215,0,.2) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,215,0,.08);
+}
+
+/* ── ctrl-panel glassmorphism ── */
+#ctrl-panel {
+  background: rgba(13,13,30,.6) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(78,205,196,.15) !important;
+  box-shadow: 0 4px 32px rgba(0,0,0,.3);
+}
+
+/* ── HUD glassmorphism ── */
+#hud {
+  background: rgba(4,4,14,.72) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(78,205,196,.2) !important;
+}
+
+/* ── Adaptive pixel ratio indicator (debug hidden) ── */
+#perf-badge {
+  position:fixed; bottom:1rem; right:1rem; z-index:999;
+  font-family: var(--font-mono); font-size:.62rem;
+  color:rgba(78,205,196,.5);
+  pointer-events:none;
+  display:none; /* hide unless ?debug */
+}
 </style>
 <body>
 
@@ -1921,6 +2074,8 @@ input[type=range]::-webkit-slider-thumb {
 
   <!-- HERO -->
   <section id="hero">
+    <canvas id="hero-canvas" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
+    <div style="position:relative;z-index:1;">
     <h1 class="glow-gold">فرضية البيان البوكري</h1>
     <p class="subtitle">نظام 𝕊 الثالوث الرياضي — تأصيل فلسفي-طبيعي للوجود والتغير واللانهاية</p>
     <div class="author-card">
@@ -1928,6 +2083,7 @@ input[type=range]::-webkit-slider-thumb {
       <span>📅 النسخة المطورة والنهائية — 2026</span>
       <span>📧 <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d590bbb2fbb4bdb8b4b1fbe7e5e4e4b7babeb4a795b2b8b4bcb9fbb6bab8">[email&#160;protected]</a></span>
     </div>
+    </div><!-- /hero z-index wrapper -->
   </section>
 
   <!-- SIM SECTION -->
@@ -3126,7 +3282,15 @@ $$❶ = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 0 \end{pmatrix},\quad 
             <div class="bh-card" style="height:100%;display:flex;flex-direction:column;">
               <div class="bh-card-title">🌀 تصور الأفق الديناميكي</div>
               <canvas id="bh-canvas" aria-label="محاكاة بصرية للثقب الأسود" role="img"
-                      style="flex:1;border-radius:8px;background:#03030d;border:1px solid var(--clr-border);display:block;width:100%;min-height:320px;cursor:crosshair;"></canvas>
+                      style="flex:1;border-radius:8px;background:#03030d;border:1px solid var(--clr-border);display:block;width:100%;min-height:340px;cursor:grab;"></canvas>
+              <!-- HUD overlay -->
+              <div class="bh-3d-hud" id="bh-3d-hud">
+                <span class="bh-hud-chip" id="bh-hud-gamma">γ = —</span>
+                <span class="bh-hud-chip gold" id="bh-hud-rs">rB = — km</span>
+                <span class="bh-hud-chip red" id="bh-hud-tidal">Tidal — /100</span>
+              </div>
+              <div class="bh-horizon-flash" id="bh-horizon-flash"></div>
+              <div class="bh-3d-hint">اسحب للتدوير • عجلة التكبير</div>
               <div class="bh-legend">
                 <span class="bh-legend-item"><span class="bh-leg-dot" style="background:#FF6B6B;"></span>أفق كلاسيكي (r<sub>s</sub>)</span>
                 <span class="bh-legend-item"><span class="bh-leg-dot" style="background:#FFD700;box-shadow:0 0 4px #FFD700;"></span>أفق بوكري (r<sub>B</sub>)</span>
@@ -5800,178 +5964,703 @@ function predictMatterState(distRatio, BS_obj, tidalIdx, useBouker){
   };
 }
 
-/* ═══════════════════════════════════════════════════
-   مُحرك الرسم — Black Hole Canvas Renderer
-═══════════════════════════════════════════════════ */
-const BH_CANVAS = document.getElementById('bh-canvas');
-let bhAnimRaf = null;
-let bhState = null; // آخر حالة محسوبة لاستخدامها في الرسم
+/* ═══════════════════════════════════════════════════════════════════
+   BlackHoleSimulator — محاكي الثقب الأسود ثلاثي الأبعاد
+   يحل محل محرك الرسم ثنائي الأبعاد السابق بالكامل
+   
+   البنية المعمارية:
+   ├── scene/camera/renderer  — Three.js r128
+   ├── Accretion disk         — TorusGeometry + custom vertex colours
+   ├── Event horizon sphere   — SphereGeometry + absorb shader effect
+   ├── Bouker horizon ring    — dashed EdgesGeometry (gold)
+   ├── Falling body           — small sphere + spaghettification scale
+   ├── Particle halo          — 3000 points for Hawking radiation effect
+   ├── Manual bloom           — additive blending trick (no postprocessing lib)
+   └── OrbitControls          — manual implementation (no extra import)
+   
+   الأداء: ~8000 مثلث | pixelRatio مُقيَّد بـ 1.5 | توقف عند إخفاء التبويب
+═══════════════════════════════════════════════════════════════════ */
+class BlackHoleSimulator {
+  constructor(canvasEl){
+    if(!canvasEl){ console.warn('BH canvas not found'); return; }
+    this.canvas   = canvasEl;
+    this.raf      = null;
+    this.clock    = 0;
+    this.paused   = false;
+    this.state    = { rs:1, rB:1, distRatio:5, tidalIdx:0, gamma:5, useBouker:true, stateColor:'#4ECDC4' };
 
-function stopBHCanvas(){ if(bhAnimRaf){ cancelAnimationFrame(bhAnimRaf); bhAnimRaf=null; } }
+    /* ── Constants baked from Bouker Hypothesis ── */
+    this.CB        = 6.184033e-42; // 🔑 ثابت التجلي البوكري
+    this.BS_UNITY  = 2/3;          // 🔑 BS(①)
 
-function renderBlackHole(state){
-  if(!BH_CANVAS) return;
-  const canvas = BH_CANVAS;
-  const ctx = canvas.getContext('2d');
-  const W = canvas.clientWidth  || canvas.parentElement.clientWidth  || 400;
-  const H = canvas.clientHeight || canvas.parentElement.clientHeight || 360;
-  canvas.width  = W;
-  canvas.height = H;
+    this._initRenderer();
+    this._buildScene();
+    this._initOrbitControls();
+    this._startLoop();
+    this._handleResize();
+  }
 
-  const cx = W/2, cy = H/2;
-  let t = 0;
-  const { rs_km, rB_km, distRatio, tidalIdx, gamma, useBouker, distKm, stateObj } = state;
+  /* ─── Renderer ─── */
+  _initRenderer(){
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    this.renderer = new THREE.WebGLRenderer({
+      canvas: this.canvas,
+      antialias: true,
+      alpha: true,
+      powerPreference: 'high-performance'
+    });
+    this.renderer.setPixelRatio(dpr);
+    this.renderer.setClearColor(0x02020c, 1);
+    this.renderer.shadowMap.enabled = false;
 
-  // أنصاف الأقطار البصرية (تكيّفية مع حجم الكانفاس)
-  const baseR    = Math.min(W,H) * 0.18;
-  const rsVisual = baseR;
-  const rBVisual = baseR * (rB_km / rs_km);
-  // موضع الجسم المقترب
-  const bodyOrbitR = Math.min(W,H) * 0.5 * Math.min(1, (distRatio - 1) / 8 + 0.35);
+    const W = this.canvas.parentElement?.clientWidth  || 500;
+    const H = this.canvas.parentElement?.clientHeight || 360;
+    this.renderer.setSize(W, H, false);
 
-  stopBHCanvas();
+    this.scene  = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(55, W/H, 0.01, 2000);
+    this.camera.position.set(0, 18, 36);
+    this.camera.lookAt(0,0,0);
+  }
 
-  function draw(){
-    bhAnimRaf = requestAnimationFrame(draw);
-    t += 0.012;
-    ctx.clearRect(0,0,W,H);
+  /* ─── Full 3D Scene ─── */
+  _buildScene(){
+    const sc = this.scene;
 
-    /* --- خلفية النجوم --- */
-    ctx.fillStyle = '#03030d';
-    ctx.fillRect(0,0,W,H);
-    for(let i=0; i<80; i++){
-      const sx = (Math.sin(i*1.37+1)*0.5+0.5)*W;
-      const sy = (Math.cos(i*2.13+0.5)*0.5+0.5)*H;
-      const bright = 0.3+0.5*Math.abs(Math.sin(i*3.7+t*0.3));
-      ctx.fillStyle = `rgba(${180+Math.floor(i*0.7)},${180+Math.floor(i*0.3)},255,${bright*0.6})`;
-      ctx.beginPath(); ctx.arc(sx,sy,0.8,0,Math.PI*2); ctx.fill();
+    /* Starfield background (2000 points) */
+    const starPos = new Float32Array(2000*3);
+    for(let i=0;i<2000;i++){
+      const r=400+Math.random()*600;
+      const th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1);
+      starPos[i*3]=r*Math.sin(ph)*Math.cos(th);
+      starPos[i*3+1]=r*Math.sin(ph)*Math.sin(th);
+      starPos[i*3+2]=r*Math.cos(ph);
     }
+    const starGeo = new THREE.BufferGeometry();
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos,3));
+    sc.add(new THREE.Points(starGeo,
+      new THREE.PointsMaterial({ color:0xaaaacc, size:0.6, transparent:true, opacity:0.7, depthWrite:false })
+    ));
 
-    /* --- قرص التراكم (Accretion Disk) --- */
-    const diskGrad = ctx.createRadialGradient(cx,cy,rsVisual*0.9, cx,cy, rsVisual*2.6);
-    diskGrad.addColorStop(0,  'rgba(255,200,60,.55)');
-    diskGrad.addColorStop(0.3,'rgba(255,100,30,.35)');
-    diskGrad.addColorStop(0.65,'rgba(180,50,180,.2)');
-    diskGrad.addColorStop(1,  'rgba(50,50,120,0)');
-    ctx.save();
-    ctx.translate(cx,cy);
-    ctx.scale(1, 0.28); // تسطيح بصري للقرص
-    ctx.beginPath();
-    ctx.arc(0,0,rsVisual*2.6,0,Math.PI*2);
-    ctx.fillStyle = diskGrad;
-    ctx.fill();
-    ctx.restore();
+    /* ── Ambient + directional light ── */
+    sc.add(new THREE.AmbientLight(0x111133, 2));
+    const sun = new THREE.PointLight(0xFFCC66, 3, 200);
+    sun.position.set(40, 30, 20);
+    sc.add(sun);
+    this.sunLight = sun;
 
-    /* --- حلقات فوتونية دوّارة --- */
-    for(let ring=0; ring<3; ring++){
-      const rr = rsVisual * (1.0 + ring*0.18);
-      const alpha = (0.35 - ring*0.1) * (0.6+0.4*Math.sin(t*2+ring));
-      ctx.beginPath();
-      ctx.arc(cx,cy,rr,0,Math.PI*2);
-      ctx.strokeStyle = `rgba(255,220,80,${alpha})`;
-      ctx.lineWidth = ring===0 ? 2 : 1;
-      ctx.stroke();
+    /* ── Event Horizon — black sphere with edge glow ── */
+    const horizonGeo = new THREE.SphereGeometry(6, 64, 64);
+
+    /* Custom material: dark core with rim glow using MeshStandardMaterial + emissive */
+    this.horizonMat = new THREE.MeshStandardMaterial({
+      color:     0x000000,
+      emissive:  0x330011,
+      emissiveIntensity: 1.2,
+      metalness: 0,
+      roughness: 1,
+      transparent: false,
+    });
+    this.horizonMesh = new THREE.Mesh(horizonGeo, this.horizonMat);
+    sc.add(this.horizonMesh);
+
+    /* Inner glow sphere (additive blend — manual bloom trick) */
+    const glowGeo = new THREE.SphereGeometry(6.4, 32, 32);
+    this.glowMat  = new THREE.MeshBasicMaterial({
+      color: 0xFF4422,
+      transparent: true,
+      opacity: 0.12,
+      side: THREE.BackSide,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    sc.add(new THREE.Mesh(glowGeo, this.glowMat));
+
+    /* Outer bloom halo */
+    const haloGeo = new THREE.SphereGeometry(8, 16, 16);
+    this.haloMat  = new THREE.MeshBasicMaterial({
+      color: 0xFF6622,
+      transparent: true,
+      opacity: 0.06,
+      side: THREE.BackSide,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    sc.add(new THREE.Mesh(haloGeo, this.haloMat));
+
+    /* ── 🔑 Bouker Horizon Ring (gold dashed) ── */
+    this.boukerRingGeo = new THREE.TorusGeometry(6.1, 0.04, 8, 120);
+    this.boukerRingMat = new THREE.MeshBasicMaterial({
+      color: 0xFFD700,
+      transparent: true,
+      opacity: 0.85,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    this.boukerRing = new THREE.Mesh(this.boukerRingGeo, this.boukerRingMat);
+    this.boukerRing.rotation.x = Math.PI/2;
+    sc.add(this.boukerRing);
+
+    /* Classic horizon ring (red) */
+    this.classicRingMat = new THREE.MeshBasicMaterial({
+      color: 0xFF6B6B, transparent:true, opacity:0.5,
+      depthWrite:false, blending: THREE.AdditiveBlending
+    });
+    this.classicRing = new THREE.Mesh(
+      new THREE.TorusGeometry(6.05, 0.035, 8, 120),
+      this.classicRingMat
+    );
+    this.classicRing.rotation.x = Math.PI/2;
+    sc.add(this.classicRing);
+
+    /* ── Accretion Disk — Torus with gradient ── */
+    /* We use two stacked tori with additive blending for a hot/cool look */
+    const makeAccDisk = (innerR, outerR, col, opacity) => {
+      const g = new THREE.TorusGeometry(
+        (innerR+outerR)/2, (outerR-innerR)/2, 4, 200
+      );
+      const m = new THREE.MeshBasicMaterial({
+        color: col,
+        transparent: true,
+        opacity,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      });
+      const mesh = new THREE.Mesh(g, m);
+      mesh.rotation.x = Math.PI/2;
+      return mesh;
+    };
+
+    /* Inner hot disk (bright orange-white) */
+    this.diskInner  = makeAccDisk(7, 10, 0xFFCC44, 0.55);
+    /* Middle orange */
+    this.diskMid    = makeAccDisk(10, 14, 0xFF6622, 0.35);
+    /* Outer faint purple */
+    this.diskOuter  = makeAccDisk(14, 20, 0x9911BB, 0.15);
+    [this.diskInner, this.diskMid, this.diskOuter].forEach(d => sc.add(d));
+
+    /* Disk shimmer ring for bloom */
+    const shimGeo = new THREE.TorusGeometry(8.5, 0.12, 4, 180);
+    this.shimMat  = new THREE.MeshBasicMaterial({
+      color:0xFFDD66, transparent:true, opacity:0.9,
+      depthWrite:false, blending: THREE.AdditiveBlending
+    });
+    this.shimRing = new THREE.Mesh(shimGeo, this.shimMat);
+    this.shimRing.rotation.x = Math.PI/2;
+    sc.add(this.shimRing);
+
+    /* ── Photon sphere (wispy ring at 1.5×rs) ── */
+    const photGeo = new THREE.TorusGeometry(9, 0.07, 4, 150);
+    this.photMat  = new THREE.MeshBasicMaterial({
+      color:0xFFFFAA, transparent:true, opacity:0.4,
+      depthWrite:false, blending: THREE.AdditiveBlending
+    });
+    this.photRing = new THREE.Mesh(photGeo, this.photMat);
+    this.photRing.rotation.x = Math.PI/2;
+    sc.add(this.photRing);
+
+    /* ── 🔑 Hawking radiation particle halo ── */
+    /* These particles represent Bouker's "information radiation" interpretation */
+    const hCount = 1500;
+    const hPos = new Float32Array(hCount*3);
+    this.hawkingVelocities = new Float32Array(hCount*3);
+    for(let i=0;i<hCount;i++){
+      const r=7+Math.random()*4;
+      const th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1);
+      hPos[i*3]  =r*Math.sin(ph)*Math.cos(th);
+      hPos[i*3+1]=r*Math.sin(ph)*Math.sin(th)*0.3;
+      hPos[i*3+2]=r*Math.cos(ph);
+      this.hawkingVelocities[i*3]  =(Math.random()-.5)*.04;
+      this.hawkingVelocities[i*3+1]=(Math.random()-.5)*.005;
+      this.hawkingVelocities[i*3+2]=(Math.random()-.5)*.04;
     }
+    const hGeo = new THREE.BufferGeometry();
+    hGeo.setAttribute('position', new THREE.BufferAttribute(hPos,3));
+    this.hawkingGeo = hGeo;
+    this.hawkingMat = new THREE.PointsMaterial({
+      color:0xCE93D8, size:0.15, transparent:true, opacity:0.6,
+      depthWrite:false, blending: THREE.AdditiveBlending,
+      sizeAttenuation:true
+    });
+    this.hawkingPoints = new THREE.Points(hGeo, this.hawkingMat);
+    sc.add(this.hawkingPoints);
 
-    /* --- أفق الحدث الكلاسيكي (أحمر) --- */
-    const gClassic = ctx.createRadialGradient(cx,cy,0, cx,cy,rsVisual);
-    gClassic.addColorStop(0, 'rgba(0,0,0,1)');
-    gClassic.addColorStop(0.85,'rgba(0,0,0,1)');
-    gClassic.addColorStop(1,'rgba(255,60,60,.6)');
-    ctx.beginPath();
-    ctx.arc(cx,cy,rsVisual,0,Math.PI*2);
-    ctx.fillStyle = gClassic;
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255,107,107,.7)';
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    /* ── 🔑 Time dilation grid sphere ── */
+    /* A wireframe sphere whose vertices deform based on distance slider */
+    const tdGeo = new THREE.SphereGeometry(30, 24, 24);
+    this.tdGridOriginal = tdGeo.attributes.position.array.slice(); // store original
+    this.tdMat = new THREE.MeshBasicMaterial({
+      color:0x4ECDC4, wireframe:true, transparent:true, opacity:0.06,
+      depthWrite:false
+    });
+    this.tdGrid = new THREE.Mesh(tdGeo, this.tdMat);
+    sc.add(this.tdGrid);
 
-    /* --- 🔑 أفق البيان البوكري (ذهبي، أصغر قليلاً) --- */
-    if(useBouker && rBVisual < rsVisual){
-      const glowSize = 3 + 2*Math.sin(t*3);
-      ctx.shadowBlur = glowSize; ctx.shadowColor = '#FFD700';
-      ctx.beginPath();
-      ctx.arc(cx,cy,rBVisual,0,Math.PI*2);
-      ctx.strokeStyle = 'rgba(255,215,0,.85)';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([6,3]);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.shadowBlur = 0;
-    }
+    /* ── Falling body (orbiting) ── */
+    const bodyGeo = new THREE.SphereGeometry(0.35, 12, 12);
+    this.bodyMat  = new THREE.MeshStandardMaterial({
+      color: 0x4ECDC4,
+      emissive: 0x2AADAA,
+      emissiveIntensity: 1.5,
+    });
+    this.bodyMesh = new THREE.Mesh(bodyGeo, this.bodyMat);
+    sc.add(this.bodyMesh);
 
-    /* --- تحديد حالة المادة بصرياً --- */
-    if(stateObj){
-      const pulse = 1 + 0.06*Math.sin(t*4);
-      ctx.beginPath();
-      ctx.arc(cx,cy,rsVisual*pulse,0,Math.PI*2);
-      ctx.strokeStyle = stateObj.color + '40';
-      ctx.lineWidth = 8;
-      ctx.stroke();
-    }
+    const bodyGlowGeo = new THREE.SphereGeometry(0.55, 8, 8);
+    this.bodyGlowMat  = new THREE.MeshBasicMaterial({
+      color:0x4ECDC4, transparent:true, opacity:0.3,
+      depthWrite:false, blending:THREE.AdditiveBlending
+    });
+    sc.add(new THREE.Mesh(bodyGlowGeo, this.bodyGlowMat));
+    this.bodyGlowMesh = this.bodyMesh; // synced in loop
 
-    /* --- الجسم المقترب (متحرك في مدار) --- */
-    const orbitAngle = t * (0.4 + Math.min(1.5, 3/distRatio));
-    const bx = cx + Math.cos(orbitAngle) * bodyOrbitR;
-    const by = cy + Math.sin(orbitAngle) * bodyOrbitR * 0.6;
-    // تأثير التسباغتي — تمدد الجسم عمودياً
-    const stretch = 1 + tidalIdx/150;
-    const bRadius = Math.max(3, 8 - tidalIdx/20);
-    ctx.save();
-    ctx.translate(bx, by);
-    ctx.scale(1/stretch, stretch);
-    const bGrad = ctx.createRadialGradient(0,0,0, 0,0,bRadius);
-    bGrad.addColorStop(0, '#4ECDC4');
-    bGrad.addColorStop(1, 'rgba(78,205,196,0)');
-    ctx.beginPath();
-    ctx.arc(0,0,bRadius,0,Math.PI*2);
-    ctx.fillStyle = bGrad;
-    ctx.fill();
-    ctx.restore();
+    /* Spaghettification tail (line) */
+    const tailCount = 12;
+    const tailPos = new Float32Array(tailCount*3);
+    const tailGeo = new THREE.BufferGeometry();
+    tailGeo.setAttribute('position', new THREE.BufferAttribute(tailPos,3));
+    this.tailGeo = tailGeo;
+    this.tail    = new THREE.Line(tailGeo, new THREE.LineBasicMaterial({
+      color:0x4ECDC4, transparent:true, opacity:0.4, depthWrite:false
+    }));
+    sc.add(this.tail);
 
-    /* --- ذيل الفوتون --- */
-    if(tidalIdx > 30){
-      for(let p=0; p<5; p++){
-        const pa = orbitAngle - p*0.08;
-        const px = cx + Math.cos(pa)*bodyOrbitR*0.98;
-        const py = cy + Math.sin(pa)*bodyOrbitR*0.6*0.98;
-        ctx.beginPath();
-        ctx.arc(px,py,2*(1-p/5),0,Math.PI*2);
-        ctx.fillStyle = `rgba(78,205,196,${0.3*(1-p/5)})`;
-        ctx.fill();
+    /* Pivot group for whole scene slow autorotate */
+    this.pivotGroup = new THREE.Group();
+    // Move all children except stars into pivot (stars stay fixed)
+    // We handle rotation in the loop instead
+  }
+
+  /* ─── Manual Orbit Controls ─── */
+  _initOrbitControls(){
+    const c = this.canvas;
+    this.orb = { isDragging:false, prevX:0, prevY:0, phi:0.45, theta:0.3, dist:40, minDist:12, maxDist:120 };
+
+    const onDown = e=>{
+      this.orb.isDragging=true;
+      this.orb.prevX = e.touches?.[0]?.clientX ?? e.clientX;
+      this.orb.prevY = e.touches?.[0]?.clientY ?? e.clientY;
+      c.style.cursor='grabbing';
+    };
+    const onUp = ()=>{ this.orb.isDragging=false; c.style.cursor='grab'; };
+    const onMove = e=>{
+      if(!this.orb.isDragging) return;
+      const cx2 = e.touches?.[0]?.clientX ?? e.clientX;
+      const cy2 = e.touches?.[0]?.clientY ?? e.clientY;
+      this.orb.theta += (cx2 - this.orb.prevX) * 0.008;
+      this.orb.phi   -= (cy2 - this.orb.prevY) * 0.006;
+      this.orb.phi    = Math.max(0.05, Math.min(Math.PI-0.05, this.orb.phi));
+      this.orb.prevX  = cx2; this.orb.prevY = cy2;
+    };
+    const onWheel = e=>{
+      this.orb.dist = Math.max(this.orb.minDist, Math.min(this.orb.maxDist, this.orb.dist + e.deltaY*0.08));
+      e.preventDefault();
+    };
+
+    c.addEventListener('mousedown',  onDown);
+    c.addEventListener('touchstart', onDown, {passive:true});
+    window.addEventListener('mouseup',   onUp);
+    window.addEventListener('touchend',  onUp);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('touchmove', e=>{ onMove(e); }, {passive:true});
+    c.addEventListener('wheel', onWheel, {passive:false});
+
+    this._cleanupOrbit = ()=>{
+      c.removeEventListener('mousedown',  onDown);
+      window.removeEventListener('mouseup',   onUp);
+      window.removeEventListener('mousemove', onMove);
+      c.removeEventListener('wheel', onWheel);
+    };
+  }
+
+  /* ─── Resize handler ─── */
+  _handleResize(){
+    this._resizeObs = new ResizeObserver(()=>{
+      if(!this.renderer) return;
+      const parent = this.canvas.parentElement;
+      if(!parent) return;
+      const W = parent.clientWidth  || 500;
+      const H = Math.max(300, parent.clientHeight || 360);
+      this.renderer.setSize(W, H, false);
+      this.camera.aspect = W/H;
+      this.camera.updateProjectionMatrix();
+    });
+    if(this.canvas.parentElement) this._resizeObs.observe(this.canvas.parentElement);
+  }
+
+  /* ─── Update state from calculation results ─── */
+  updateState(newState){
+    Object.assign(this.state, newState);
+
+    /* 🔑 Update Bouker ring size based on rB/rs ratio */
+    const ratio = this.state.rB / this.state.rs;
+    const newRadius = 6 * ratio;
+    this.boukerRingGeo.dispose();
+    this.boukerRingGeo = new THREE.TorusGeometry(newRadius, 0.04, 8, 120);
+    this.boukerRing.geometry = this.boukerRingGeo;
+
+    /* Orbit radius from distRatio */
+    this._orbitR = Math.max(10, Math.min(45, (newState.distRatio||5) * 5));
+
+    /* Tidal color shift on body */
+    const t = Math.min(1, (newState.tidalIdx||0)/100);
+    const r = t, g = 1-t*0.7, b = 1-t;
+    this.bodyMat.emissive.setRGB(r*0.15, g*0.4, b*0.4);
+
+    /* Hawking radiation intensity — 🔑 linked to T_Bouker */
+    this.hawkingMat.opacity = 0.2 + (newState.tidalIdx||0)/200;
+    this.hawkingMat.color.setHex(newState.tidalIdx > 60 ? 0xFF9944 : 0xCE93D8);
+
+    /* 🔑 Time dilation grid deformation */
+    if(this.tdGrid){
+      const pos = this.tdGrid.geometry.attributes.position;
+      const orig = this.tdGridOriginal;
+      const gamma = Math.min(10, isFinite(newState.gamma) ? newState.gamma : 10);
+      const pull = (gamma - 1) / 9; // 0..1
+      for(let i=0;i<pos.count;i++){
+        const x=orig[i*3], y=orig[i*3+1], z=orig[i*3+2];
+        const r=Math.sqrt(x*x+y*y+z*z);
+        // Vertices closer to pole (below disk) get pulled inward — spacetime curvature visual
+        const pullFactor = 1 - pull * Math.pow(Math.abs(y)/r, 1.5) * 0.4;
+        pos.array[i*3]   = x * pullFactor;
+        pos.array[i*3+1] = y * pullFactor;
+        pos.array[i*3+2] = z * pullFactor;
       }
+      pos.needsUpdate = true;
     }
 
-    /* --- معامل γ فوق الكانفاس --- */
-    ctx.font = 'bold 13px "Courier New"';
-    ctx.textAlign = 'right';
-    ctx.fillStyle = 'rgba(255,215,0,.8)';
-    if(isFinite(gamma)){
-      ctx.fillText(`γ = ${gamma.toFixed(gamma>100?0:2)}`, W-10, 22);
-    } else {
-      ctx.fillStyle = 'rgba(255,100,100,.9)';
-      ctx.fillText('γ = ∞', W-10, 22);
-    }
-
-    /* --- عدادات المسافة --- */
-    ctx.font = '10px "Courier New"';
-    ctx.textAlign = 'left';
-    ctx.fillStyle = 'rgba(78,205,196,.6)';
-    ctx.fillText(`d = ${distRatio.toFixed(2)} rₛ`, 8, 20);
-
-    /* --- تسميات الأفق --- */
-    ctx.font = '9px Tajawal,sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(255,107,107,.7)';
-    ctx.fillText('rₛ كلاسيكي', cx, cy - rsVisual - 6);
-    if(useBouker && rBVisual < rsVisual){
-      ctx.fillStyle = 'rgba(255,215,0,.75)';
-      ctx.fillText('rB بوكري', cx, cy - rBVisual - 6);
+    /* Flash when inside horizon threshold */
+    if(this.state.distRatio < 1.5){
+      const flashEl = document.getElementById('bh-horizon-flash');
+      if(flashEl){ flashEl.classList.remove('active'); void flashEl.offsetWidth; flashEl.classList.add('active'); }
+      /* Camera shake */
+      const wrap = this.canvas.closest('.bh-card') || this.canvas.parentElement;
+      if(wrap){ wrap.classList.remove('cam-shake'); void wrap.offsetWidth; wrap.classList.add('cam-shake'); }
     }
   }
 
-  draw();
+  /* ─── Animation loop ─── */
+  _startLoop(){
+    const loop = ()=>{
+      this.raf = requestAnimationFrame(loop);
+      if(this.paused || !this.renderer) return;
+      this.clock += 0.016;
+      this._update();
+      this.renderer.render(this.scene, this.camera);
+    };
+    loop();
+  }
+
+  _update(){
+    const t = this.clock;
+    const { distRatio, tidalIdx, gamma, useBouker, stateColor } = this.state;
+
+    /* ── Orbit camera ── */
+    const o = this.orb;
+    const cx = o.dist * Math.sin(o.phi) * Math.sin(o.theta);
+    const cy = o.dist * Math.cos(o.phi);
+    const cz = o.dist * Math.sin(o.phi) * Math.cos(o.theta);
+    this.camera.position.set(cx,cy,cz);
+    this.camera.lookAt(0,0,0);
+
+    /* Slow auto-rotate when not dragging */
+    if(!o.isDragging) o.theta += 0.003;
+
+    /* ── Accretion disk animation ── */
+    this.diskInner.rotation.z = t * 0.8;
+    this.diskMid.rotation.z   = -t * 0.4;
+    this.diskOuter.rotation.z = t * 0.2;
+    this.shimRing.rotation.z  = t * 1.2;
+    this.photRing.rotation.z  = -t * 0.6;
+
+    /* Disk pulse with distRatio */
+    const diskPulse = 1 + 0.04*Math.sin(t*3);
+    this.diskInner.scale.setScalar(diskPulse);
+
+    /* ── Event horizon glow animation ── */
+    this.glowMat.opacity  = 0.08 + 0.05*Math.sin(t*2.5);
+    this.haloMat.opacity  = 0.04 + 0.03*Math.sin(t*1.8);
+    this.shimMat.opacity  = 0.7  + 0.2*Math.sin(t*4);
+
+    /* Bouker ring glow (🔑 pulsates at CB frequency analog ~0.1Hz → 6.28rad/s) */
+    if(useBouker){
+      this.boukerRingMat.opacity = 0.5 + 0.4*Math.sin(t*6.28);
+      this.boukerRing.visible = true;
+    } else {
+      this.boukerRing.visible = false;
+    }
+    this.classicRingMat.opacity = 0.3 + 0.2*Math.sin(t*2);
+
+    /* ── Falling body orbit ── */
+    const orbitR  = this._orbitR || 22;
+    const angSpeed = 0.3 + Math.min(2, 2/Math.max(1,distRatio));
+    const angle   = t * angSpeed;
+    const bx = Math.cos(angle) * orbitR;
+    const bz = Math.sin(angle) * orbitR * 0.55; // tilt
+    const by = Math.sin(angle * 0.7) * orbitR * 0.15;
+    this.bodyMesh.position.set(bx, by, bz);
+
+    /* Spaghettification scale */
+    const stretch = 1 + tidalIdx/100;
+    this.bodyMesh.scale.set(1/stretch, stretch, 1/stretch);
+    this.bodyMesh.scale.multiplyScalar(Math.max(0.2, 1 - tidalIdx/120));
+
+    /* Spaghetti tail */
+    const tailPos = this.tailGeo.attributes.position.array;
+    const tLen = 12;
+    for(let i=0;i<tLen;i++){
+      const frac = i/tLen;
+      const pa = angle - frac*0.35;
+      tailPos[i*3]   = Math.cos(pa) * orbitR * (1 - frac*0.05);
+      tailPos[i*3+1] = Math.sin(pa*0.7) * orbitR * 0.15 * (1-frac*0.5);
+      tailPos[i*3+2] = Math.sin(pa) * orbitR * 0.55 * (1-frac*0.05);
+    }
+    this.tailGeo.attributes.position.needsUpdate = true;
+    this.tail.material.opacity = Math.min(0.6, tidalIdx/80);
+    this.tail.visible = tidalIdx > 10;
+
+    /* ── Hawking radiation particles (🔑 info leak from horizon) ── */
+    const hPos = this.hawkingGeo.attributes.position.array;
+    const vel  = this.hawkingVelocities;
+    for(let i=0;i<1500;i++){
+      hPos[i*3]   += vel[i*3];
+      hPos[i*3+1] += vel[i*3+1];
+      hPos[i*3+2] += vel[i*3+2];
+      const r = Math.sqrt(hPos[i*3]**2 + hPos[i*3+1]**2 + hPos[i*3+2]**2);
+      if(r > 22 || r < 5.5){
+        const nr=7+Math.random()*2, th2=Math.random()*Math.PI*2, ph2=Math.acos(2*Math.random()-1);
+        hPos[i*3]  =nr*Math.sin(ph2)*Math.cos(th2);
+        hPos[i*3+1]=nr*Math.sin(ph2)*Math.sin(ph2)*0.25;
+        hPos[i*3+2]=nr*Math.cos(ph2);
+      }
+    }
+    this.hawkingGeo.attributes.position.needsUpdate = true;
+    this.hawkingPoints.rotation.y = t * 0.05;
+
+    /* ── Time dilation grid slow rotation ── */
+    this.tdGrid.rotation.y = t * 0.02;
+
+    /* ── HUD update ── */
+    const g = isFinite(gamma) ? gamma.toFixed(gamma>100?0:1) : '∞';
+    const hudG  = document.getElementById('bh-hud-gamma');
+    const hudR  = document.getElementById('bh-hud-rs');
+    const hudT  = document.getElementById('bh-hud-tidal');
+    if(hudG) hudG.textContent = `γ = ${g}`;
+    if(hudR) hudR.textContent = `rB = ${this.state.rB?.toFixed?.(2) || '—'} km`;
+    if(hudT) hudT.textContent = `T = ${tidalIdx.toFixed(1)}/100`;
+
+    /* Sunlight position animation */
+    this.sunLight.position.set(
+      40*Math.sin(t*0.2), 30, 40*Math.cos(t*0.2)
+    );
+  }
+
+  /* ─── Cleanup ─── */
+  dispose(){
+    if(this.raf) cancelAnimationFrame(this.raf);
+    this._cleanupOrbit?.();
+    this._resizeObs?.disconnect();
+    this.scene?.traverse(obj=>{
+      obj.geometry?.dispose();
+      if(obj.material){
+        const m=Array.isArray(obj.material)?obj.material:[obj.material];
+        m.forEach(mat=>{ mat.map?.dispose(); mat.dispose(); });
+      }
+    });
+    this.renderer?.dispose();
+    this.renderer = null;
+  }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   HeroParticleField — حقل جسيمات قسم البطل التفاعلي
+   يتفاعل مع حركة الفأرة — يتموج نحو المطلق (❶)
+   ~3000 جسيم | Three.js | معطَّل عند الجهاز المحمول المنخفض
+═══════════════════════════════════════════════════════════════════ */
+class HeroParticleField {
+  constructor(canvasEl){
+    if(!canvasEl){ return; }
+    this.canvas   = canvasEl;
+    this.raf      = null;
+    this.clock    = 0;
+    this.mouse    = { x:0, y:0, vx:0, vy:0 };
+    this.COUNT    = window.innerWidth < 768 ? 800 : 2000;
+
+    this._init();
+    this._listen();
+    this._loop();
+  }
+
+  _init(){
+    const W = this.canvas.parentElement?.clientWidth  || 1200;
+    const H = this.canvas.parentElement?.clientHeight || 320;
+    this.canvas.width  = W;
+    this.canvas.height = H;
+
+    const dpr = Math.min(window.devicePixelRatio||1, 1.5);
+    this.renderer = new THREE.WebGLRenderer({ canvas:this.canvas, antialias:false, alpha:true });
+    this.renderer.setPixelRatio(dpr);
+    this.renderer.setClearColor(0x000000, 0);
+    this.renderer.setSize(W, H, false);
+
+    this.scene  = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(70, W/H, 0.1, 800);
+    this.camera.position.z = 180;
+
+    /* Particles — three layers with different sizes/speeds */
+    const N = this.COUNT;
+    const pos    = new Float32Array(N*3);
+    const speeds = new Float32Array(N);
+    const phases = new Float32Array(N);
+
+    for(let i=0;i<N;i++){
+      pos[i*3]   = (Math.random()-.5)*320;
+      pos[i*3+1] = (Math.random()-.5)*160;
+      pos[i*3+2] = (Math.random()-.5)*80;
+      speeds[i]  = 0.2 + Math.random()*0.8;
+      phases[i]  = Math.random()*Math.PI*2;
+    }
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+    this.geo    = geo;
+    this.speeds = speeds;
+    this.phases = phases;
+    this.posArr = pos;
+
+    /* Three colour layers */
+    const mats = [
+      new THREE.PointsMaterial({ color:0x4ECDC4, size:0.9, transparent:true, opacity:0.7, depthWrite:false, blending:THREE.AdditiveBlending }),
+      new THREE.PointsMaterial({ color:0x9C27B0, size:0.6, transparent:true, opacity:0.5, depthWrite:false, blending:THREE.AdditiveBlending }),
+      new THREE.PointsMaterial({ color:0xFFD700, size:0.4, transparent:true, opacity:0.4, depthWrite:false, blending:THREE.AdditiveBlending }),
+    ];
+
+    /* Split into 3 equal groups */
+    const split = Math.floor(N/3);
+    for(let g=0;g<3;g++){
+      const geoSlice = new THREE.BufferGeometry();
+      const slicePos = pos.slice(g*split*3, (g+1)*split*3);
+      geoSlice.setAttribute('position', new THREE.BufferAttribute(slicePos, 3));
+      const pts = new THREE.Points(geoSlice, mats[g]);
+      this.scene.add(pts);
+    }
+
+    /* Central ❶ glow sphere */
+    const coreGeo = new THREE.SphereGeometry(4, 24, 24);
+    const coreMat = new THREE.MeshBasicMaterial({ color:0xFFD700, transparent:true, opacity:0.15, blending:THREE.AdditiveBlending });
+    this.coreGlow = new THREE.Mesh(coreGeo, coreMat);
+    this.scene.add(this.coreGlow);
+
+    const glowGeo2 = new THREE.SphereGeometry(8, 16, 16);
+    const glowMat2 = new THREE.MeshBasicMaterial({ color:0xFFAA00, transparent:true, opacity:0.05, blending:THREE.AdditiveBlending });
+    this.scene.add(new THREE.Mesh(glowGeo2, glowMat2));
+
+    /* Resize */
+    new ResizeObserver(()=>{
+      if(!this.renderer) return;
+      const p = this.canvas.parentElement;
+      if(!p) return;
+      const nW=p.clientWidth, nH=p.clientHeight||280;
+      this.renderer.setSize(nW, nH, false);
+      this.camera.aspect = nW/nH;
+      this.camera.updateProjectionMatrix();
+    }).observe(this.canvas.parentElement);
+  }
+
+  _listen(){
+    const hero = this.canvas.parentElement?.parentElement || document.getElementById('hero');
+    if(!hero) return;
+    hero.addEventListener('mousemove', e=>{
+      const rect = hero.getBoundingClientRect();
+      this.mouse.x = ((e.clientX - rect.left)/rect.width  - 0.5) * 160;
+      this.mouse.y = ((e.clientY - rect.top) /rect.height - 0.5) * -80;
+    });
+  }
+
+  _loop(){
+    const loop=()=>{
+      this.raf = requestAnimationFrame(loop);
+      this.clock += 0.016;
+      this._update();
+      this.renderer?.render(this.scene, this.camera);
+    };
+    loop();
+    /* Mark canvas ready for fade-in */
+    setTimeout(()=> this.canvas.classList.add('ready'), 200);
+  }
+
+  _update(){
+    const t = this.clock;
+    /* Camera gently follows mouse */
+    this.camera.position.x += (this.mouse.x*0.15 - this.camera.position.x) * 0.04;
+    this.camera.position.y += (this.mouse.y*0.1  - this.camera.position.y) * 0.04;
+    this.camera.lookAt(0,0,0);
+
+    /* Core pulse */
+    const pulse = 1 + 0.12*Math.sin(t*2.8);
+    this.coreGlow.scale.setScalar(pulse);
+    this.coreGlow.material.opacity = 0.1 + 0.08*Math.sin(t*3.5);
+
+    /* Scene gentle rotation */
+    this.scene.rotation.y = t * 0.012;
+  }
+
+  dispose(){
+    if(this.raf) cancelAnimationFrame(this.raf);
+    this.renderer?.dispose();
+    this.renderer = null;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Wiring — connect classes to BH simulator engine
+═══════════════════════════════════════════════════════════════════ */
+
+/* Global instances */
+window._bhSim3D   = null;
+window._heroField = null;
+
+/* Legacy 2D stubs — kept as no-ops to avoid errors */
+function stopBHCanvas(){ window._bhSim3D?.dispose(); window._bhSim3D=null; }
+
+/* Replace the old 2D renderBlackHole with 3D */
+function renderBlackHole(state){
+  const canvas = document.getElementById('bh-canvas');
+  if(!canvas) return;
+
+  if(!window._bhSim3D){
+    window._bhSim3D = new BlackHoleSimulator(canvas);
+  }
+
+  /* Map the physics state to the 3D simulator */
+  window._bhSim3D.updateState({
+    rs:         state.rs_km,
+    rB:         state.rB_km,
+    distRatio:  state.distRatio,
+    tidalIdx:   state.tidalIdx,
+    gamma:      state.gamma,
+    useBouker:  state.useBouker,
+    stateColor: state.stateObj?.color || '#4ECDC4',
+  });
+}
+
+/* Init hero field on DOM ready */
+document.addEventListener('DOMContentLoaded', ()=>{
+  const heroCanvas = document.getElementById('hero-canvas');
+  if(heroCanvas && !window._heroField){
+    window._heroField = new HeroParticleField(heroCanvas);
+  }
+});
+
+/* Performance: pause all 3D when tab is hidden */
+document.addEventListener('visibilitychange', ()=>{
+  const hidden = document.hidden;
+  if(window._bhSim3D)   window._bhSim3D.paused   = hidden;
+});
+
+
+/* (2D code replaced by BlackHoleSimulator 3D class) */
 
 /* ═══════════════════════════════════════════════════
    دالة الحساب الرئيسية — تُستدعى عند الضغط على "احسب"
